@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="給財務人員的 ATM（角色・目標・方法）AI 指令練習工具">
+<title>ATM 財務指令工坊</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;900&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: 左欄依序點選「情境 → A → T → M」，右欄即時產出一張像 ATM 明細單的結果；手機改為上下堆疊 */
+:root{
+  --bg:#f5f5f2; --panel:#ffffff; --ink:#24221e; --muted:#6c675e; --line:#e2dfd8;
+  --brand:#a88a5c; --brand-ink:#ffffff;
+  --a:#b9786c; --a-soft:#f6e9e6;
+  --t:#9c9440; --t-soft:#f2f0dc;
+  --m:#8d6aa6; --m-soft:#efe8f4;
+  --slip:#fdfcf8; --slip-line:#d9d3c5;
+  --ok:#3f7d55;
+  --f-display:"Noto Serif TC","Songti TC","PMingLiU",serif;
+  --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono","Noto Sans TC",ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#191816; --panel:#22201d; --ink:#ece8e0; --muted:#a59f93; --line:#38352f;
+  --brand:#c9ab7c; --brand-ink:#1b1915;
+  --a:#dc9b8f; --a-soft:#3a2724; --t:#cbc26a; --t-soft:#33311d; --m:#c09ddb; --m-soft:#2f2638;
+  --slip:#1f1e1b; --slip-line:#45413a; --ok:#7cc495; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#191816; --panel:#22201d; --ink:#ece8e0; --muted:#a59f93; --line:#38352f;
+  --brand:#c9ab7c; --brand-ink:#1b1915;
+  --a:#dc9b8f; --a-soft:#3a2724; --t:#cbc26a; --t-soft:#33311d; --m:#c09ddb; --m-soft:#2f2638;
+  --slip:#1f1e1b; --slip-line:#45413a; --ok:#7cc495; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{margin:0}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.65;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1240px;margin:0 auto;padding-block:28px 56px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+
+/* Header */
+.top{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:24px;align-items:end;padding-bottom:22px;border-bottom:1px solid var(--line)}
+.eyebrow{font-size:12px;letter-spacing:.14em;color:var(--brand);font-weight:700}
+.top h1{font-size:clamp(28px,4.4vw,42px);font-weight:900;line-height:1.2;margin-top:4px}
+.top p{margin:8px 0 0;color:var(--muted);max-width:62ch}
+.legend{display:flex;gap:10px;flex-wrap:wrap}
+.key{display:flex;align-items:center;gap:8px;padding:6px 12px 6px 6px;border:1.5px solid;border-radius:10px;background:var(--panel)}
+.key b{font-family:var(--f-display);font-size:20px;width:30px;height:30px;display:grid;place-items:center;border-radius:7px;color:var(--panel)}
+.key span{font-size:13px;line-height:1.3}
+.key small{display:block;color:var(--muted);font-size:11px}
+.key.a{border-color:var(--a)} .key.a b{background:var(--a)}
+.key.t{border-color:var(--t)} .key.t b{background:var(--t)}
+.key.m{border-color:var(--m)} .key.m b{background:var(--m)}
+
+/* Workspace */
+.work{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:28px;margin-top:26px;align-items:start}
+@media (max-width:900px){.work{grid-template-columns:minmax(0,1fr)}}
+.builder{display:flex;flex-direction:column;gap:18px;min-width:0}
+.step{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 18px 20px;min-width:0}
+.step-head{display:flex;gap:12px;align-items:flex-start;margin-bottom:12px}
+.badge{flex:none;width:38px;height:38px;border-radius:9px;display:grid;place-items:center;font-family:var(--f-display);font-weight:900;font-size:20px;color:var(--panel);background:var(--brand)}
+.step.a .badge{background:var(--a)} .step.t .badge{background:var(--t)} .step.m .badge{background:var(--m)}
+.step-head h2{font-size:19px;font-weight:600}
+.step-head p{margin:2px 0 0;color:var(--muted);font-size:13.5px}
+.sub{font-size:12px;letter-spacing:.08em;color:var(--muted);font-weight:700;margin:14px 0 8px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1.5px solid var(--line);background:var(--panel);border-radius:999px;padding:6px 14px;cursor:pointer;font-size:14px;line-height:1.4;transition:background .15s,border-color .15s}
+.chip:hover{border-color:var(--muted)}
+.chip[aria-pressed="true"]{font-weight:500}
+.chip.multi::before{content:"＋ ";color:var(--muted)}
+.chip.multi[aria-pressed="true"]::before{content:"✓ ";color:inherit}
+.step.a .chip[aria-pressed="true"]{background:var(--a-soft);border-color:var(--a)}
+.step.t .chip[aria-pressed="true"]{background:var(--t-soft);border-color:var(--t)}
+.step.m .chip[aria-pressed="true"]{background:var(--m-soft);border-color:var(--m)}
+
+.scen{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px}
+.scen button{text-align:left;border:1.5px solid var(--line);background:var(--panel);border-radius:10px;padding:10px 12px;cursor:pointer;line-height:1.4}
+.scen button:hover{border-color:var(--muted)}
+.scen button strong{display:block;font-size:14.5px}
+.scen button span{font-size:12px;color:var(--muted)}
+.scen button[aria-pressed="true"]{border-color:var(--brand);background:color-mix(in srgb,var(--brand) 12%,var(--panel))}
+
+.field{display:flex;flex-direction:column;gap:4px;min-width:0}
+.field label{font-size:12.5px;color:var(--muted)}
+.field input,.field textarea{font:inherit;font-size:14px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%}
+.field textarea{resize:vertical;min-height:62px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (max-width:520px){.grid2{grid-template-columns:minmax(0,1fr)}}
+.tip{margin-top:12px;font-size:13px;color:var(--muted);background:var(--bg);border-radius:8px;padding:8px 12px}
+.tip b{color:var(--ink)}
+
+/* Result slip */
+.result{position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px);min-width:0}
+@media (max-width:900px){.result{position:static}}
+.slip{background:var(--slip);border:1px solid var(--slip-line);border-radius:6px;box-shadow:0 10px 30px -18px rgba(0,0,0,.35);overflow:hidden}
+.slip-top{background:var(--brand);color:var(--brand-ink);padding:14px 18px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.slip-top h2{font-size:18px;font-weight:900;letter-spacing:.06em}
+.slip-top small{font-family:var(--f-mono);font-size:11.5px;opacity:.9}
+.meter{display:flex;gap:6px;padding:12px 18px;border-bottom:1px dashed var(--slip-line);align-items:center;flex-wrap:wrap}
+.meter .seg{display:flex;align-items:center;gap:6px;font-size:12.5px;padding:3px 10px 3px 4px;border-radius:999px;background:var(--bg)}
+.meter .seg i{font-style:normal;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:700;color:var(--panel);background:var(--line)}
+.meter .seg.on.a i{background:var(--a)} .meter .seg.on.t i{background:var(--t)} .meter .seg.on.m i{background:var(--m)}
+.meter .seg.on{color:var(--ink)} .meter .seg:not(.on){color:var(--muted)}
+.meter .score{margin-left:auto;font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+.tabs{display:flex;border-bottom:1px solid var(--slip-line);overflow-x:auto}
+.tabs button{flex:1;min-width:max-content;background:none;border:0;border-bottom:3px solid transparent;padding:11px 14px;cursor:pointer;font-size:14px;color:var(--muted)}
+.tabs button[aria-selected="true"]{color:var(--ink);font-weight:700;border-bottom-color:var(--brand)}
+.tabs .n{font-family:var(--f-mono);font-size:11px;margin-left:4px;background:var(--bg);padding:1px 6px;border-radius:999px}
+.pane{padding:16px 18px 18px}
+.prompt{font-family:var(--f-mono);font-size:13.2px;line-height:1.75;white-space:pre-wrap;word-break:break-word;margin:0;max-height:min(62vh,640px);overflow:auto;padding-right:4px}
+.prompt .h{font-weight:500}
+.prompt .h.a{color:var(--a)} .prompt .h.t{color:var(--t)} .prompt .h.m{color:var(--m)} .prompt .h.d{color:var(--brand)}
+.prompt .ph{background:color-mix(in srgb,var(--brand) 18%,transparent);border-radius:3px;padding:0 2px}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;padding-top:14px;border-top:1px dashed var(--slip-line)}
+.btn{border:1.5px solid var(--ink);background:var(--ink);color:var(--bg);border-radius:8px;padding:8px 14px;cursor:pointer;font-size:14px;font-weight:500}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn:hover{opacity:.88}
+.toast{font-size:13px;color:var(--ok);align-self:center}
+.list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.list li{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:start;padding:10px 12px;border:1px solid var(--slip-line);border-radius:8px;background:var(--panel)}
+.list .num{font-family:var(--f-mono);font-size:12px;color:var(--muted);padding-top:2px}
+.list .why{display:block;font-size:12.5px;color:var(--muted);margin-top:2px}
+.list .src{font-size:11px;padding:1px 7px;border-radius:999px;white-space:nowrap;align-self:center}
+.src.s{background:var(--bg);color:var(--muted)} .src.t{background:var(--t-soft);color:var(--t)} .src.m{background:var(--m-soft);color:var(--m)} .src.a{background:var(--a-soft);color:var(--a)}
+.copy-one{background:none;border:1px solid var(--slip-line);border-radius:6px;padding:2px 8px;font-size:12px;cursor:pointer;color:var(--muted)}
+.list li.need{grid-template-columns:auto minmax(0,1fr)}
+.list li.need input{margin-top:5px;width:16px;height:16px;accent-color:var(--brand)}
+.list li.need.done strong{text-decoration:line-through;color:var(--muted)}
+.intro{font-size:13.5px;color:var(--muted);margin:0 0 12px}
+.compare{margin-top:14px;font-size:13.5px}
+.compare summary{cursor:pointer;color:var(--muted)}
+.compare .bad{margin-top:8px;padding:10px 12px;border-radius:8px;background:var(--bg);font-family:var(--f-mono);font-size:13px}
+.compare ul{margin:8px 0 0;padding-left:20px;color:var(--muted)}
+.safety{margin-top:14px;font-size:12.5px;color:var(--muted);line-height:1.6;padding:10px 14px;border-left:3px solid var(--brand);background:var(--panel);border-radius:0 8px 8px 0}
+.safety b{color:var(--ink)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <div class="eyebrow">給財務人員的 AI 指令練習</div>
+      <h1>ATM 財務指令工坊</h1>
+      <p>先選一個工作情境，再依序點選角色、目標、方法。右邊會即時組好一段可以直接貼進 ChatGPT、Copilot 或 Claude 的指令，並附上追問方向與需要補充的資料。</p>
+    </div>
+    <div class="legend" aria-label="ATM 指令架構">
+      <div class="key a"><b>A</b><span>角色<small>請 AI 扮演誰</small></span></div>
+      <div class="key t"><b>T</b><span>目標<small>要完成什麼任務</small></span></div>
+      <div class="key m"><b>M</b><span>方法<small>什麼條件讓它做得更好</small></span></div>
+    </div>
+  </header>
+
+  <div class="work">
+    <section class="builder" aria-label="指令設定">
+      <div class="step s0">
+        <div class="step-head"><div class="badge">情</div><div><h2>選擇工作情境</h2><p>每個情境會帶出建議的角色、任務、追問與資料清單。</p></div></div>
+        <div class="scen" id="scen"></div>
+        <div class="grid2" style="margin-top:14px">
+          <div class="field"><label for="ctx-co">公司產業與規模（選填）</label><input id="ctx-co" placeholder="例：電子零組件製造，年營收約 30 億"></div>
+          <div class="field"><label for="ctx-period">期間與幣別（選填）</label><input id="ctx-period" placeholder="例：2026 年 9 月，新台幣千元"></div>
+        </div>
+      </div>
+
+      <div class="step a">
+        <div class="step-head"><div class="badge">A</div><div><h2>角色：請 AI 扮演誰？</h2><p>角色越具體，AI 使用的專業詞彙和判斷標準就越貼近你要的水準。</p></div></div>
+        <div class="chips" id="roles" role="group" aria-label="角色"></div>
+        <div class="field" style="margin-top:12px"><label for="role-custom">或自己寫一個角色</label><input id="role-custom" placeholder="例：在上市櫃公司任職 15 年的財務長"></div>
+        <div class="sub">專業程度</div>
+        <div class="chips" id="levels" role="group" aria-label="專業程度"></div>
+      </div>
+
+      <div class="step t">
+        <div class="step-head"><div class="badge">T</div><div><h2>目標：要它完成什麼？</h2><p>可複選。任務拆得越清楚，結果越不需要來回修改。</p></div></div>
+        <div class="chips" id="tasks" role="group" aria-label="任務"></div>
+        <div class="field" style="margin-top:12px"><label for="task-custom">補充其他任務（選填）</label><input id="task-custom" placeholder="例：特別說明行銷費用超支的原因"></div>
+        <div class="sub">給誰看</div>
+        <div class="chips" id="aud" role="group" aria-label="報告對象"></div>
+        <div class="sub">輸出格式</div>
+        <div class="chips" id="fmt" role="group" aria-label="輸出格式"></div>
+        <div class="sub">篇幅</div>
+        <div class="chips" id="len" role="group" aria-label="篇幅"></div>
+      </div>
+
+      <div class="step m">
+        <div class="step-head"><div class="badge">M</div><div><h2>方法：用什麼條件讓它做得更好？</h2><p>可複選。這些是財務工作最常用的提問技巧。</p></div></div>
+        <div class="chips" id="methods" role="group" aria-label="方法"></div>
+        <div class="tip" id="method-tip"></div>
+      </div>
+    </section>
+
+    <aside class="result" aria-label="產出結果">
+      <div class="slip">
+        <div class="slip-top"><h2>指令明細</h2><small id="slip-id"></small></div>
+        <div class="meter" id="meter"></div>
+        <div class="tabs" role="tablist">
+          <button role="tab" id="tab-p" aria-selected="true" aria-controls="pane-p">指令</button>
+          <button role="tab" id="tab-f" aria-selected="false" aria-controls="pane-f">建議追問<span class="n" id="n-f"></span></button>
+          <button role="tab" id="tab-n" aria-selected="false" aria-controls="pane-n">需補充資料<span class="n" id="n-n"></span></button>
+        </div>
+        <div class="pane" id="pane-p" role="tabpanel" aria-labelledby="tab-p">
+          <pre class="prompt" id="prompt"></pre>
+          <div class="actions">
+            <button class="btn" id="copy-prompt">複製指令</button>
+            <button class="btn ghost" id="copy-all">複製全部（含追問與資料清單）</button>
+            <span class="toast" id="toast" aria-live="polite"></span>
+          </div>
+          <details class="compare">
+            <summary>對照：沒有用 ATM 時，大家通常怎麼問？</summary>
+            <div class="bad" id="bad"></div>
+            <ul>
+              <li>沒有角色：AI 不知道該用會計師還是一般人的標準回答。</li>
+              <li>沒有目標細節：只能給通用建議，看不出要給誰、做成什麼樣子。</li>
+              <li>沒有方法：無法驗算、看不到假設，數字錯了也不容易發現。</li>
+            </ul>
+          </details>
+        </div>
+        <div class="pane" id="pane-f" role="tabpanel" aria-labelledby="tab-f" hidden>
+          <p class="intro">拿到第一版回覆後，挑一兩題接著問。好的追問會讓 AI 修正、深化或換個角度，而不是重新開始。</p>
+          <ol class="list" id="follow"></ol>
+        </div>
+        <div class="pane" id="pane-n" role="tabpanel" aria-labelledby="tab-n" hidden>
+          <p class="intro">送出指令前，把下面的資料準備好並貼到指令最後的「補充資料」區。資料越完整，AI 越不需要自己猜。勾選可以追蹤自己準備到哪裡。</p>
+          <ul class="list" id="needs"></ul>
+        </div>
+      </div>
+      <div class="safety"><b>使用前提醒：</b>不要貼上客戶個資、身分證字號、帳號或尚未公開的財報數字；請先改成代號或去識別化。AI 可能算錯或引用過時法規，所有數字與法條都要由你最後核對。</div>
+    </aside>
+  </div>
+</div>
+
+<script>
+const SCEN = [
+ {id:"bva",name:"預算差異分析",desc:"預算 vs 實際，找出原因",skill:"擅長預算編製、差異分析與管理報告",
+  bad:"幫我分析這個月的預算差異。",
+  roles:["資深財務分析師（FP&A）","預算控制主管","財務長（CFO）"],
+  tasks:["找出差異超過門檻的科目並依金額排序","拆解差異原因（價格、數量、時間性）","區分可控與不可控因素","提出改善做法或預算修正建議","撰寫給主管的差異說明摘要"],
+  def:[0,1],
+  follow:["只看前三大差異，對全年預測的影響是多少？","哪些差異屬於時間性差異，下個月會自然回沖？","請把差異說明改寫成給非財務主管看的版本。","請列出需要向業務、採購部門確認的問題清單。","如果這個趨勢持續到年底，請模擬樂觀、基本、悲觀三種情境。"],
+  needs:[["預算數與實際數","科目、期間、金額；最好附上去年同期"],["差異門檻","例如 ±10% 或 ±50 萬，AI 才知道哪些值得說明"],["已知的特殊事件","調價、一次性費用、專案延後等，避免 AI 誤判"],["主要成本結構","哪些是變動成本、哪些是固定成本"]]},
+ {id:"close",name:"月結與財報摘要",desc:"損益重點、比率、管理報告",skill:"熟悉月結作業、財務報表分析與管理層報告撰寫",
+  bad:"幫我整理這個月的財報重點。",
+  roles:["會計主管","財務長（CFO）","投資人關係（IR）經理"],
+  tasks:["摘要本月損益的關鍵變化","計算毛利率、營益率、費用率並與上月及去年同期比較","標示波動異常的科目","撰寫管理層報告的文字說明","產出一頁式簡報大綱"],
+  def:[0,1],
+  follow:["這些指標和同業平均相比如何？請說明你參考的口徑。","如果會議只有五分鐘，哪三個數字最該報告？","請用董事會簡報的語氣重寫結論。","主管最可能追問哪些問題？請先準備好回答。","根據本月數字，下一季最需要注意的風險是什麼？"],
+  needs:[["損益表與資產負債表","本期、上期、去年同期三期並列最好"],["幣別與金額單位","避免 AI 把千元當成元"],["本月重大事件","新客戶、停產、匯率大幅波動等"],["公司慣用的報告格式","有範本就貼上，AI 會照著排"]]},
+ {id:"cash",name:"現金流預測",desc:"13 週資金預測與缺口",skill:"專精資金調度、13 週現金流預測與銀行融資",
+  bad:"幫我做現金流預測。",
+  roles:["資金管理專家（Treasury）","資深財務分析師（FP&A）","財務長（CFO）"],
+  tasks:["建立未來 13 週現金流預測的架構","預估各週收款與付款時點","找出可能出現資金缺口的週次","提出融資或資金調度方案","設計收款延遲的敏感度分析"],
+  def:[0,2],
+  follow:["如果最大客戶延遲 30 天付款，缺口會出現在哪一週？","以我們的規模，最低安全現金水位設多少比較合理？","比較短期借款和延長應付帳款兩種做法的成本與風險。","請把這個預測轉成 Excel 公式與欄位結構。","哪三個假設對結果影響最大？"],
+  needs:[["期初現金餘額","各銀行帳戶合計即可"],["應收帳款帳齡與收款條件","主要客戶的付款天數與歷史準時率"],["固定支出時程","薪資、租金、稅款、貸款本息的日期與金額"],["已知的資本支出","設備採購、裝修等大額支出"],["可動用的銀行額度","額度、利率與到期日"]]},
+ {id:"audit",name:"費用稽核與異常",desc:"報銷檢查、異常偵測",skill:"專長費用稽核、內部控制與舞弊風險辨識",
+  bad:"幫我看看這些費用有沒有問題。",
+  roles:["內部稽核師","鑑識會計師","會計主管"],
+  tasks:["依公司費用政策逐筆檢查明細","找出重複報銷、拆單、超過限額等異常","依風險高低排序","說明每筆異常的判斷理由","建議後續查核程序"],
+  def:[1,3],
+  follow:["要確認這幾筆異常，還需要補哪些憑證？","請把這些判斷規則轉成 Excel 篩選或公式。","請設計一份每月可重複使用的自動檢核清單。","這些判斷有哪些可能是誤判？請說明情境。","請寫一段委婉的說明，通知當事人補件。"],
+  needs:[["去識別化的費用明細","日期、類別、金額、事由；姓名改成代號"],["費用報銷政策與核決權限","限額、需檢附的單據、簽核層級"],["檢查期間與部門範圍","避免 AI 把跨期資料混在一起"],["過去發生過的異常樣態","讓 AI 知道要特別留意什麼"]]},
+ {id:"ar",name:"應收帳款催收",desc:"催收信、話術、分期方案",skill:"擅長應收帳款管理與兼顧客戶關係的商務溝通",
+  bad:"幫我寫一封催款信。",
+  roles:["應收帳款主管","客戶關係經理","商務書信專家"],
+  tasks:["撰寫第一次友善的付款提醒","撰寫逾期 60 天的正式催告","說明可提供的分期付款方案","同時提供中文與英文版本","準備電話催收時的說話重點"],
+  def:[0],
+  follow:["請把語氣調得更堅定，但仍保留合作關係。","如果客戶回覆資金周轉困難，我該怎麼回？","請濃縮成一則適合用 LINE 或簡訊傳的訊息。","若再逾期 30 天，內部應如何升級處理？","請改寫成英文，收件人是對方財務長。"],
+  needs:[["客戶代號與往來關係","合作年資、重要程度"],["發票號碼、金額、到期日","逾期天數也一併寫上"],["付款條件與過去付款紀錄","是首次逾期還是常態"],["公司可接受的讓步","能否分期、減免利息、延長幾天"],["寄件人職稱與署名","決定信件的正式程度"]]},
+ {id:"capex",name:"投資案評估",desc:"NPV、IRR、回收期",skill:"專精資本預算、評價模型與投資決策分析",
+  bad:"這個投資案值得做嗎？",
+  roles:["投資分析師","企業財務顧問","財務長（CFO）"],
+  tasks:["計算 NPV、IRR 與回收期","列出所有關鍵假設","進行折現率與營收的敏感度分析","評估風險與非財務因素","提出是否投資的建議並說明理由"],
+  def:[0,1,4],
+  follow:["折現率上下各調 2%，結論會改變嗎？","在最悲觀的情境下，最大損失是多少？","如果改用租賃取代購買，結果有什麼不同？","請整理成給董事會的一頁摘要。","我的現金流估計可能漏掉哪些成本？"],
+  needs:[["初始投資金額與時點","含安裝、教育訓練等附帶成本"],["各年度預估現金流入與流出","至少涵蓋專案年限"],["折現率或 WACC","公司內部要求的報酬率"],["專案年限與殘值","設備可用幾年、期末能賣多少"],["稅率與折舊方法","直線法或其他方法"]]},
+ {id:"tax",name:"稅務與法規解讀",desc:"白話說明、適用判斷",skill:"熟悉台灣營所稅、營業稅、扣繳與相關函釋",
+  bad:"這條稅法是什麼意思？",
+  roles:["稅務顧問","會計師（CPA）","法遵專員"],
+  tasks:["用白話解釋這項規定","判斷本公司的情況是否適用","列出需準備的文件與申報期限","比較不同處理方式的稅負差異","提醒常見錯誤與罰則"],
+  def:[0,1],
+  follow:["請列出你引用的法條與條次，方便我自行核對。","這項規定近兩年是否有修正？","如果交易金額超過門檻，處理方式會有什麼不同？","請整理我要請教簽證會計師的問題清單。","請寫一份給業務同仁的內部宣導說明。"],
+  needs:[["適用地區與年度","法規每年可能不同"],["公司組織型態與產業","股份有限公司、分公司、外商等"],["具體交易內容","交易對象、金額、時間、合約條件"],["你已知的法條或函釋","有的話貼上，AI 比較不會亂引用"]]},
+ {id:"excel",name:"Excel 公式與自動化",desc:"公式、樞紐、Power Query",skill:"精通 Excel 財務建模、Power Query 與 VBA",
+  bad:"幫我寫一個 Excel 公式。",
+  roles:["Excel 財務建模專家","Power Query / VBA 工程師","財務系統顧問"],
+  tasks:["寫出公式並逐段解釋","把重複的手動作業改成自動化流程","設計清楚易讀的報表版面","找出現有公式的錯誤並修正","撰寫可重複執行的 VBA 巨集"],
+  def:[0],
+  follow:["這個公式在 Google Sheets 也能用嗎？","資料量到十萬列時，有更快的寫法嗎？","請加上錯誤處理，遇到空白或文字不要出現 #N/A。","請用一步一步的操作教學，讓新同事也能照做。","請改寫成動態陣列公式（FILTER、XLOOKUP）。"],
+  needs:[["Excel 版本","Microsoft 365、2019 或 Google Sheets，函數支援不同"],["欄位名稱與幾列範例資料","用假資料即可"],["期望的輸出長相","畫個簡單表格或文字描述"],["目前的公式或錯誤訊息","若是除錯，請完整貼上"]]},
+];
+const LEVELS=["具 10 年以上實務經驗","熟悉台灣上市櫃公司實務","擅長向非財務背景的人解釋"];
+const AUD=["直屬主管","高階主管／董事會","財務部同仁","非財務部門","外部客戶或廠商"];
+const FMT=["條列重點","表格","正式報告","Email","簡報大綱"];
+const LEN=["精簡（300 字內）","適中","完整詳細"];
+const METHODS=[
+ {id:"cot",name:"逐步推理",text:"請一步一步列出計算與推理過程，讓我可以逐項驗算。",tip:"<b>逐步推理</b>：數字題最實用。AI 把過程寫出來，你才看得到哪一步算錯。",follow:"請把第 3 步的計算再拆細，並說明數字來源。"},
+ {id:"ask",name:"先問我再回答",text:"開始之前，若資訊不足，請先列出最多 5 個你需要我補充的問題，等我回答後再產出結果。",tip:"<b>先問我再回答</b>：適合資料還不齊的時候，讓 AI 主動告訴你缺什麼。",follow:"我已回答你的問題，請依補充的資訊產出完整版本。"},
+ {id:"assume",name:"列出假設",text:"所有你自行假設的數字或條件，請集中列在最後的「假設清單」並標註。",tip:"<b>列出假設</b>：AI 常會自己補數字。集中列出來，你一眼就能看出哪些要換成真實資料。",follow:"請把假設清單中第 2 項改成我提供的數字後重新計算。"},
+ {id:"check",name:"數字自我檢核",text:"完成後請檢查加總、百分比與單位是否一致，並標示任何可能的計算錯誤。",tip:"<b>數字自我檢核</b>：讓 AI 先自己對帳一次，可以抓到加總不符或單位錯置。",follow:"請再對一次帳：各明細加總是否等於總數？"},
+ {id:"options",name:"多方案比較",text:"請提供 2 到 3 個可行方案，用表格比較優缺點、成本與風險，最後給出建議。",tip:"<b>多方案比較</b>：做決策時很好用，避免 AI 只給一個看似合理的答案。",follow:"請針對你建議的方案，列出執行步驟、負責單位與時程。"},
+ {id:"example",name:"提供範例格式",text:"請參考我提供的範例格式輸出：\n【請貼上一份你滿意的過往範例】",tip:"<b>提供範例格式</b>：與其描述格式，不如直接給一份範例，AI 會照著排。",need:["一份你滿意的過往範例","例如上個月的報告或主管認可的格式"],follow:"格式很好，請用同樣格式處理下個月的資料。"},
+ {id:"uncert",name:"標註不確定性",text:"對於不確定或可能過時的資訊（例如法規、稅率、市場數據），請明確標註，並建議我該向哪裡查證。",tip:"<b>標註不確定性</b>：法規和稅率最容易過時，請 AI 主動標出沒把握的地方。",follow:"你標註不確定的地方，請告訴我官方查證管道。"},
+ {id:"plain",name:"白話說明",text:"專業術語第一次出現時，請附一句白話解釋。",tip:"<b>白話說明</b>：報告要給非財務同仁看時特別有用。",follow:"請再用一個生活化的比喻說明最重要的結論。"},
+ {id:"gaap",name:"遵循會計準則",text:"請依照我國適用的 IFRS 會計準則口徑處理，若有不同處理方式請一併說明。",tip:"<b>遵循會計準則</b>：指定口徑，避免 AI 混用美國 GAAP 或其他標準。",need:["公司採用的會計準則","IFRS、企業會計準則（EAS）等"]},
+ {id:"tw",name:"台灣用語",text:"請使用繁體中文與台灣財會慣用語。",tip:"<b>台灣用語</b>：避免出現「營收」與「營業收入」混用，或中國大陸用語。"},
+];
+
+const S={scen:"bva",role:0,roleCustom:"",levels:new Set([0]),tasks:new Set([0,1]),taskCustom:"",aud:0,fmt:1,len:1,methods:new Set(["cot","assume","tw"]),lastMethod:"cot",co:"",period:"",done:new Set()};
+const $=id=>document.getElementById(id);
+const esc=s=>s.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+const cur=()=>SCEN.find(s=>s.id===S.scen);
+
+function chip(label,pressed,on,multi){const b=document.createElement("button");b.type="button";b.className="chip"+(multi?" multi":"");b.textContent=label;b.setAttribute("aria-pressed",pressed);b.onclick=on;return b}
+function fill(el,items){el.replaceChildren(...items)}
+
+function renderBuilder(){
+  const sc=cur();
+  fill($("scen"),SCEN.map(s=>{const b=document.createElement("button");b.type="button";b.setAttribute("aria-pressed",s.id===S.scen);b.innerHTML=`<strong>${s.name}</strong><span>${s.desc}</span>`;b.onclick=()=>{S.scen=s.id;S.role=0;S.tasks=new Set(s.def);S.done=new Set();update()};return b}));
+  fill($("roles"),sc.roles.map((r,i)=>chip(r,!S.roleCustom&&S.role===i,()=>{S.role=i;S.roleCustom="";$("role-custom").value="";update()})));
+  fill($("levels"),LEVELS.map((l,i)=>chip(l,S.levels.has(i),()=>{toggle(S.levels,i);update()},true)));
+  fill($("tasks"),sc.tasks.map((t,i)=>chip(t,S.tasks.has(i),()=>{toggle(S.tasks,i);update()},true)));
+  fill($("aud"),AUD.map((a,i)=>chip(a,S.aud===i,()=>{S.aud=i;update()})));
+  fill($("fmt"),FMT.map((a,i)=>chip(a,S.fmt===i,()=>{S.fmt=i;update()})));
+  fill($("len"),LEN.map((a,i)=>chip(a,S.len===i,()=>{S.len=i;update()})));
+  fill($("methods"),METHODS.map(m=>chip(m.name,S.methods.has(m.id),()=>{toggle(S.methods,m.id);S.lastMethod=m.id;update()},true)));
+  const m=METHODS.find(x=>x.id===S.lastMethod);
+  $("method-tip").innerHTML=m.tip;
+}
+function toggle(set,v){set.has(v)?set.delete(v):set.add(v)}
+
+function roleText(){return S.roleCustom.trim()||cur().roles[S.role]}
+function taskList(){const sc=cur();const t=sc.tasks.filter((_,i)=>S.tasks.has(i));if(S.taskCustom.trim())t.push(S.taskCustom.trim());return t}
+function methodList(){return METHODS.filter(m=>S.methods.has(m.id))}
+function needList(){
+  const sc=cur();const out=sc.needs.map(n=>({k:n[0],why:n[1],src:"s"}));
+  methodList().forEach(m=>{if(m.need)out.push({k:m.need[0],why:m.need[1],src:"m"})});
+  if(!S.co.trim())out.push({k:"公司產業與規模",why:"同樣的費用率，在不同產業代表的意義完全不同",src:"s"});
+  if(!S.period.trim())out.push({k:"資料期間與幣別單位",why:"左側「期間與幣別」可直接填寫",src:"s"});
+  if(S.aud===4)out.push({k:"與對方的往來背景",why:"對外文件要拿捏語氣與揭露程度",src:"t"});
+  return out;
+}
+function followList(){
+  const sc=cur();const out=sc.follow.map(f=>({q:f,src:"s"}));
+  methodList().forEach(m=>{if(m.follow)out.push({q:m.follow,src:"m"})});
+  if(S.aud===1)out.push({q:"請再濃縮成三句話的重點結論，放在最前面。",src:"t"});
+  if(S.aud===3)out.push({q:"請檢查有沒有非財務同仁看不懂的術語，替換成白話。",src:"t"});
+  if(S.fmt===4)out.push({q:"請為每一頁簡報加上一句講者備註。",src:"t"});
+  out.push({q:"請以審閱者的角度檢查你剛才的回答，指出三個最可能出錯或需要補強的地方。",src:"a"});
+  return out;
+}
+
+function buildPrompt(html){
+  const sc=cur(),w=s=>html?esc(s):s;
+  const H=(cls,t)=>html?`<span class="h ${cls}">${t}</span>`:t;
+  const P=t=>html?`<span class="ph">${esc(t)}</span>`:t;
+  const lv=LEVELS.filter((_,i)=>S.levels.has(i));
+  let r=H("a","# 角色（A）")+"\n";
+  r+=w(`你是一位${roleText()}，${sc.skill}${lv.length?"，"+lv.join("，"):""}。`)+"\n\n";
+  r+=H("t","# 目標（T）")+"\n";
+  const bg=[S.co.trim()&&`公司背景：${S.co.trim()}`,S.period.trim()&&`期間與幣別：${S.period.trim()}`].filter(Boolean);
+  if(bg.length)r+=w(bg.join("；")+"。")+"\n";
+  const t=taskList();
+  if(t.length){r+=w(`我需要你協助「${sc.name}」，請完成以下任務：`)+"\n";t.forEach((x,i)=>r+=w(`${i+1}. ${x}`)+"\n")}
+  else r+=P("【請至少選一項任務，告訴 AI 要完成什麼】")+"\n";
+  r+=w(`報告對象：${AUD[S.aud]}；輸出格式：${FMT[S.fmt]}；篇幅：${LEN[S.len]}。`)+"\n\n";
+  r+=H("m","# 方法（M）")+"\n";
+  const ms=methodList();
+  if(ms.length)ms.forEach(m=>{const parts=m.text.split("\n");r+=w("- "+parts[0])+"\n";if(parts[1])r+="  "+P(parts[1])+"\n"});
+  else r+=P("【請選擇至少一種方法，讓結果更可靠】")+"\n";
+  r+="\n"+H("d","# 補充資料")+"\n";
+  needList().forEach(n=>r+=w(`- ${n.k}：`)+P("【請貼上或說明】")+"\n");
+  return r.trimEnd();
+}
+
+function renderResult(){
+  const sc=cur(),a=!!roleText(),t=taskList().length>0,m=methodList().length>0;
+  const score=[a,t,m].filter(Boolean).length;
+  $("meter").innerHTML=`<span class="seg a ${a?"on":""}"><i>A</i>角色</span><span class="seg t ${t?"on":""}"><i>T</i>目標 ${taskList().length} 項</span><span class="seg m ${m?"on":""}"><i>M</i>方法 ${methodList().length} 項</span><span class="score">${score}/3 完成</span>`;
+  $("slip-id").textContent=`情境 ${String(SCEN.indexOf(sc)+1).padStart(2,"0")}｜${sc.name}`;
+  $("prompt").innerHTML=buildPrompt(true);
+  $("bad").textContent="「"+sc.bad+"」";
+  const fl=followList();$("n-f").textContent=fl.length;
+  const srcName={s:"情境",m:"方法",t:"目標",a:"通用"};
+  $("follow").innerHTML=fl.map((f,i)=>`<li><span class="num">${String(i+1).padStart(2,"0")}</span><span>${esc(f.q)}<span class="why"><span class="src ${f.src}">${srcName[f.src]}</span></span></span><button class="copy-one" type="button" data-q="${i}">複製</button></li>`).join("");
+  $("follow").querySelectorAll(".copy-one").forEach(b=>b.onclick=()=>copy(fl[+b.dataset.q].q,b));
+  const nl=needList();$("n-n").textContent=nl.length;
+  $("needs").innerHTML=nl.map((n,i)=>{const id="need-"+i,d=S.done.has(n.k);return `<li class="need ${d?"done":""}"><input type="checkbox" id="${id}" ${d?"checked":""} data-k="${esc(n.k)}"><label for="${id}"><strong>${esc(n.k)}</strong><span class="why">${esc(n.why)}</span></label></li>`}).join("");
+  $("needs").querySelectorAll("input").forEach(c=>c.onchange=()=>{toggle(S.done,c.dataset.k);renderResult()});
+}
+
+function update(){renderBuilder();renderResult()}
+
+async function copy(text,btn){
+  let ok=false;
+  try{await navigator.clipboard.writeText(text);ok=true}catch(e){
+    const ta=document.createElement("textarea");ta.value=text;document.body.appendChild(ta);ta.select();
+    try{ok=document.execCommand("copy")}catch(_){}ta.remove();
+  }
+  const msg=ok?"已複製":"無法自動複製，請手動選取文字";
+  if(btn&&btn.classList.contains("copy-one")){const o=btn.textContent;btn.textContent=ok?"已複製":"請手動";setTimeout(()=>btn.textContent=o,1400)}
+  else{$("toast").textContent=msg;setTimeout(()=>$("toast").textContent="",1800)}
+}
+$("copy-prompt").onclick=()=>copy(buildPrompt(false));
+$("copy-all").onclick=()=>{
+  const txt=buildPrompt(false)+"\n\n===== 建議追問方向 =====\n"+followList().map((f,i)=>`${i+1}. ${f.q}`).join("\n")+"\n\n===== 需要補充的資料或背景 =====\n"+needList().map(n=>`□ ${n.k}（${n.why}）`).join("\n");
+  copy(txt);
+};
+$("role-custom").oninput=e=>{S.roleCustom=e.target.value;renderBuilder();renderResult()};
+$("task-custom").oninput=e=>{S.taskCustom=e.target.value;renderResult()};
+$("ctx-co").oninput=e=>{S.co=e.target.value;renderResult()};
+$("ctx-period").oninput=e=>{S.period=e.target.value;renderResult()};
+const tabs=[["tab-p","pane-p"],["tab-f","pane-f"],["tab-n","pane-n"]];
+tabs.forEach(([t,p])=>$(t).onclick=()=>tabs.forEach(([t2,p2])=>{$(t2).setAttribute("aria-selected",t2===t);$(p2).hidden=p2!==p}));
+update();
+</script>
+</body>
+</html>
