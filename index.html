@@ -131,6 +131,18 @@ button{font:inherit;color:inherit}
 .list li.need{grid-template-columns:auto minmax(0,1fr)}
 .list li.need input{margin-top:5px;width:16px;height:16px;accent-color:var(--brand)}
 .list li.need.done strong{text-decoration:line-through;color:var(--muted)}
+.list li.need .body{min-width:0}
+.ex{margin-top:8px;border:1px dashed var(--slip-line);border-radius:6px;background:var(--slip)}
+.ex-head{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 10px;border-bottom:1px dashed var(--slip-line);font-size:12px;color:var(--muted);flex-wrap:wrap}
+.ex-head div{display:flex;gap:6px}
+.ex pre{margin:0;padding:8px 10px;font-family:var(--f-mono);font-size:12.5px;line-height:1.7;white-space:pre-wrap;word-break:break-word;font-variant-numeric:tabular-nums}
+.ex-btn{background:var(--panel);border:1px solid var(--slip-line);border-radius:6px;padding:2px 9px;font-size:12px;cursor:pointer;color:var(--ink)}
+.ex-btn[aria-pressed="true"]{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
+.bulk{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.btn.sm{padding:5px 11px;font-size:13px;border-width:1px}
+.fake{font-size:12px;color:var(--muted)}
+.step.s0 .chip[aria-pressed="true"]{background:color-mix(in srgb,var(--brand) 14%,var(--panel));border-color:var(--brand)}
+.prompt .ap{background:color-mix(in srgb,var(--ok) 14%,transparent);border-radius:3px}
 .intro{font-size:13.5px;color:var(--muted);margin:0 0 12px}
 .compare{margin-top:14px;font-size:13.5px}
 .compare summary{cursor:pointer;color:var(--muted)}
@@ -162,6 +174,8 @@ button{font:inherit;color:inherit}
       <div class="step s0">
         <div class="step-head"><div class="badge">情</div><div><h2>選擇工作情境</h2><p>每個情境會帶出建議的角色、任務、追問與資料清單。</p></div></div>
         <div class="scen" id="scen"></div>
+        <div class="sub">範例產業（右側「需補充資料」會依此提供參考範例）</div>
+        <div class="chips" id="inds" role="group" aria-label="範例產業"></div>
         <div class="grid2" style="margin-top:14px">
           <div class="field"><label for="ctx-co">公司產業與規模（選填）</label><input id="ctx-co" placeholder="例：電子零組件製造，年營收約 30 億"></div>
           <div class="field"><label for="ctx-period">期間與幣別（選填）</label><input id="ctx-period" placeholder="例：2026 年 9 月，新台幣千元"></div>
@@ -226,7 +240,12 @@ button{font:inherit;color:inherit}
           <ol class="list" id="follow"></ol>
         </div>
         <div class="pane" id="pane-n" role="tabpanel" aria-labelledby="tab-n" hidden>
-          <p class="intro">送出指令前，把下面的資料準備好並貼到指令最後的「補充資料」區。資料越完整，AI 越不需要自己猜。勾選可以追蹤自己準備到哪裡。</p>
+          <p class="intro">送出指令前，把下面的資料準備好並貼到指令最後的「補充資料」區。每一項都附有<b id="ind-name"></b>的參考範例，可以照著格式換成自己公司的數字，或先按「套用到指令」直接拿範例練習。</p>
+          <div class="bulk">
+            <button class="btn ghost sm" type="button" id="apply-all">全部套用範例</button>
+            <button class="btn ghost sm" type="button" id="apply-none">清除套用</button>
+            <span class="fake">範例公司與數字皆為虛構，僅供練習</span>
+          </div>
           <ul class="list" id="needs"></ul>
         </div>
       </div>
@@ -304,14 +323,194 @@ const METHODS=[
  {id:"assume",name:"列出假設",text:"所有你自行假設的數字或條件，請集中列在最後的「假設清單」並標註。",tip:"<b>列出假設</b>：AI 常會自己補數字。集中列出來，你一眼就能看出哪些要換成真實資料。",follow:"請把假設清單中第 2 項改成我提供的數字後重新計算。"},
  {id:"check",name:"數字自我檢核",text:"完成後請檢查加總、百分比與單位是否一致，並標示任何可能的計算錯誤。",tip:"<b>數字自我檢核</b>：讓 AI 先自己對帳一次，可以抓到加總不符或單位錯置。",follow:"請再對一次帳：各明細加總是否等於總數？"},
  {id:"options",name:"多方案比較",text:"請提供 2 到 3 個可行方案，用表格比較優缺點、成本與風險，最後給出建議。",tip:"<b>多方案比較</b>：做決策時很好用，避免 AI 只給一個看似合理的答案。",follow:"請針對你建議的方案，列出執行步驟、負責單位與時程。"},
- {id:"example",name:"提供範例格式",text:"請參考我提供的範例格式輸出：\n【請貼上一份你滿意的過往範例】",tip:"<b>提供範例格式</b>：與其描述格式，不如直接給一份範例，AI 會照著排。",need:["一份你滿意的過往範例","例如上個月的報告或主管認可的格式"],follow:"格式很好，請用同樣格式處理下個月的資料。"},
+ {id:"example",name:"提供範例格式",text:"請參考我在「補充資料」中提供的過往範例，沿用相同的格式與語氣輸出。",tip:"<b>提供範例格式</b>：與其描述格式，不如直接給一份範例，AI 會照著排。",need:["一份你滿意的過往範例","例如上個月的報告或主管認可的格式"],follow:"格式很好，請用同樣格式處理下個月的資料。"},
  {id:"uncert",name:"標註不確定性",text:"對於不確定或可能過時的資訊（例如法規、稅率、市場數據），請明確標註，並建議我該向哪裡查證。",tip:"<b>標註不確定性</b>：法規和稅率最容易過時，請 AI 主動標出沒把握的地方。",follow:"你標註不確定的地方，請告訴我官方查證管道。"},
  {id:"plain",name:"白話說明",text:"專業術語第一次出現時，請附一句白話解釋。",tip:"<b>白話說明</b>：報告要給非財務同仁看時特別有用。",follow:"請再用一個生活化的比喻說明最重要的結論。"},
  {id:"gaap",name:"遵循會計準則",text:"請依照我國適用的 IFRS 會計準則口徑處理，若有不同處理方式請一併說明。",tip:"<b>遵循會計準則</b>：指定口徑，避免 AI 混用美國 GAAP 或其他標準。",need:["公司採用的會計準則","IFRS、企業會計準則（EAS）等"]},
  {id:"tw",name:"台灣用語",text:"請使用繁體中文與台灣財會慣用語。",tip:"<b>台灣用語</b>：避免出現「營收」與「營業收入」混用，或中國大陸用語。"},
 ];
 
-const S={scen:"bva",role:0,roleCustom:"",levels:new Set([0]),tasks:new Set([0,1]),taskCustom:"",aud:0,fmt:1,len:1,methods:new Set(["cot","assume","tw"]),lastMethod:"cot",co:"",period:"",done:new Set()};
+const IND=[{id:"mfg",name:"傳統製造"},{id:"trade",name:"外貿"},{id:"tech",name:"科技業"}];
+// 需補充資料的參考範例：依情境的 needs 順序排列；all 代表三種產業共用。公司與數字皆為虛構。
+const EX={
+ bva:[
+  {mfg:`科目｜9月預算｜9月實際｜去年同期（新台幣千元）
+營業收入｜380,000｜352,600｜341,200
+直接材料｜171,000｜166,900｜150,100
+直接人工｜45,600｜46,200｜43,800
+製造費用｜52,000｜55,300｜49,700
+推銷費用｜15,200｜14,100｜13,900
+管理費用｜19,000｜20,800｜18,600`,
+   trade:`科目｜9月預算｜9月實際｜去年同期（新台幣千元）
+銷貨收入｜240,000｜261,500｜228,000
+銷貨成本｜204,000｜227,300｜195,100
+運費及報關費｜6,500｜8,900｜5,800
+匯兌損益｜0｜-3,200｜1,100
+推銷費用｜7,200｜6,900｜6,700
+管理費用｜5,800｜5,600｜5,500`,
+   tech:`科目｜9月預算｜9月實際｜去年同期（新台幣千元）
+營業收入｜1,050,000｜982,000｜1,010,000
+營業成本｜745,500｜713,000｜717,000
+研發費用｜94,500｜108,300｜89,000
+推銷費用｜31,500｜29,800｜30,200
+管理費用｜26,000｜27,400｜25,100`},
+  {mfg:"單一科目差異超過 ±5% 且金額超過 300 萬元者需說明。",
+   trade:"差異超過 ±8% 或 200 萬元需說明；匯兌損益不論金額都要說明。",
+   tech:"差異超過 ±5% 或 1,000 萬元需說明；研發費用另需依專案別說明。"},
+  {mfg:"8 月起鋼材進價上漲約 6%，尚未轉嫁客戶；9 月 CNC 設備大修 280 萬元一次認列；德國客戶一筆 2,500 萬元訂單延到 10 月出貨。",
+   trade:"9 月美元兌新台幣由 31.2 升到 32.4（預算匯率 31.5）；美西航線運價上漲約 35%；一批塑膠原料轉賣東南亞新客戶，多出約 1,800 萬元營收。",
+   tech:"Wi-Fi 7 模組量產延後一個月；9 月一次認列 1,200 萬元的設計軟體授權費；越南廠產能利用率 72%（預算 80%）。"},
+  {mfg:"直接材料約占營收 47%、直接人工 13%、製造費用 15%（其中折舊約 40%，屬固定成本）。",
+   trade:"進貨成本約占營收 87%，屬變動成本；運費報關隨出貨量變動；人事與倉租約占 5%，屬固定成本。",
+   tech:"營業成本約占 70%（材料 55%、人工與製造費用 15%）；研發費用約 10%，其中人事費約 65% 屬固定。"}
+ ],
+ close:[
+  {mfg:`（新台幣千元）｜2026/9｜2026/8｜2025/9
+營業收入｜352,600｜368,900｜341,200
+營業毛利｜73,800｜81,200｜82,400
+營業費用｜34,900｜35,600｜32,500
+營業利益｜38,900｜45,600｜49,900
+存貨（月底）｜612,000｜585,000｜540,000
+應收帳款（月底）｜498,000｜503,000｜470,000`,
+   trade:`（新台幣千元）｜2026/9｜2026/8｜2025/9
+銷貨收入｜261,500｜236,800｜228,000
+銷貨毛利｜34,200｜33,900｜32,900
+營業費用｜21,400｜19,700｜18,000
+營業利益｜12,800｜14,200｜14,900
+應收帳款（月底）｜310,000｜284,000｜265,000
+外幣淨部位（美元千元）｜6,800｜5,900｜4,200`,
+   tech:`（新台幣千元）｜2026/9｜2026/8｜2025/9
+營業收入｜982,000｜1,035,000｜1,010,000
+營業毛利｜269,000｜290,000｜293,000
+研發費用｜108,300｜97,600｜89,000
+營業利益｜103,500｜133,600｜148,700
+存貨（月底）｜1,420,000｜1,360,000｜1,180,000
+現金及約當現金｜2,850,000｜2,910,000｜2,640,000`},
+  {mfg:"新台幣千元；比率取到小數點後一位。",
+   trade:"新台幣千元；外幣部位以美元千元表示，9 月底匯率 32.4。",
+   tech:"新台幣千元；越南子公司以越南盾記帳，已依當月平均匯率換算。"},
+  {mfg:"鋼材漲價尚未轉嫁客戶；德國客戶 2,500 萬元訂單延到 10 月；存貨較去年同期增加 13%。",
+   trade:"新增東南亞客戶 2 家；美元升值使應付帳款產生評價損失約 320 萬元；美西運價上漲。",
+   tech:"Wi-Fi 7 模組延後量產；研發人員增加 45 人；存貨較去年同期增加 20%，主要為關鍵料件備料。"},
+  {all:"管理月報固定四段：一、本月重點（3 點以內）；二、損益比較表（本月／上月／去年同期／差異%）；三、異常科目說明；四、下月展望與待辦。"}
+ ],
+ cash:[
+  {mfg:"10/6 各銀行合計 1.85 億元（台銀 9,800 萬、兆豐 6,200 萬、外幣存款折合 2,500 萬）。",
+   trade:"合計 9,200 萬元，其中美元存款 180 萬美元（約 5,830 萬元）。",
+   tech:"合計 28.5 億元：台灣母公司 22 億元、越南子公司約 6.5 億元。"},
+  {mfg:"前五大客戶占應收 62%，付款條件為月結 90 天。帳齡：未逾期 4.1 億、逾期 30 天內 6,200 萬、逾期 60 天以上 1,800 萬。",
+   trade:"美國客戶 T/T 出貨後 60 天、東南亞客戶即期 L/C。帳齡：未逾期 2.6 億、逾期 30 天內 3,800 萬、逾期 60 天以上 1,200 萬。",
+   tech:"品牌客戶 A 占應收 35%，月結 120 天；其餘多為月結 60 到 90 天；過去一年準時付款率約 92%。"},
+  {mfg:"每月 5 日薪資 6,300 萬元；每月 10 日廠房租金 350 萬元；11/30 暫繳營所稅約 2,100 萬元；每季末銀行利息約 480 萬元。",
+   trade:"每月 5 日薪資 1,100 萬元；每月 1 日倉儲租金 260 萬元；國外供應商下單預付 30%，出貨前付清餘款。",
+   tech:"每月 5 日薪資 4.2 億元（含越南廠）；11 月發放員工酬勞 1.8 億元；每月 25 日越南廠電費約 3,000 萬元。"},
+  {mfg:"11 月支付五軸加工機尾款 3,600 萬元。",
+   trade:"無重大資本支出；12 月支付倉儲系統升級 450 萬元。",
+   tech:"越南二廠擴建：11 月付 2.4 億元、明年 1 月付 1.6 億元。"},
+  {mfg:"短期週轉額度 5 億元（已動用 1.2 億），利率約 2.1%。",
+   trade:"進口融資額度 500 萬美元（已動用 210 萬美元）；短期借款額度 1.5 億元。",
+   tech:"聯貸額度 30 億元（未動用）；短期額度 15 億元，利率約 1.9% 到 2.3%。"}
+ ],
+ audit:[
+  {mfg:`日期｜員工代號｜部門｜類別｜金額｜事由
+9/03｜E1023｜生管｜交際費｜18,500｜宴請供應商
+9/03｜E1023｜生管｜交際費｜18,500｜宴請供應商
+9/12｜E2087｜業務｜差旅費｜9,800｜台中—高雄拜訪客戶
+9/15｜E3154｜廠務｜雜項購置｜4,950｜手工具
+9/15｜E3154｜廠務｜雜項購置｜4,980｜手工具
+9/28｜E2087｜業務｜交通費｜3,600｜計程車（週日）`,
+   trade:`日期｜員工代號｜部門｜類別｜金額｜事由
+9/05｜T051｜業務｜國外差旅｜86,000｜越南展覽機票住宿
+9/09｜T051｜業務｜交際費｜32,000｜宴請客戶（未附名單）
+9/18｜T077｜船務｜快遞費｜12,400｜寄送樣品
+9/18｜T077｜船務｜快遞費｜12,400｜寄送樣品
+9/26｜T014｜管理｜文具｜9,990｜辦公用品`,
+   tech:`日期｜員工代號｜部門｜類別｜金額｜事由
+9/02｜R5521｜研發｜軟體訂閱｜48,000｜開發工具年費（個人信用卡）
+9/10｜R5521｜研發｜軟體訂閱｜48,000｜開發工具年費
+9/14｜S3307｜業務｜差旅費｜125,000｜美國出差（商務艙）
+9/20｜M1180｜管理｜餐費｜2,980｜加班餐
+9/20｜M1180｜管理｜餐費｜2,960｜加班餐`},
+  {mfg:"交際費單筆超過 1 萬元需事前申請並附參加名單；5,000 元以上的物品需走請購流程；假日交通費需主管核准。",
+   trade:"國外差旅需附行程與展覽證明；交際費需附客戶名單；單筆 1 萬元以上快遞需註明訂單號碼。",
+   tech:"軟體訂閱一律由 IT 統一採購；航程 8 小時以上才可搭商務艙，且需副總核准；加班餐每人每日上限 200 元。"},
+  {mfg:"2026 年 7 到 9 月，全公司共 2,316 筆。",
+   trade:"2026 年 7 到 9 月，業務部與船務部共 684 筆。",
+   tech:"2026 年第三季，台灣母公司共 5,870 筆。"},
+  {mfg:"曾發生同一張發票重複報銷，以及用多張 4,9xx 元發票規避請購門檻。",
+   trade:"曾發生樣品快遞費重複請款，以及私人行程混入出差費用。",
+   tech:"曾發生個人訂閱與公司採購重複，以及商務艙未經核准。"}
+ ],
+ ar:[
+  {mfg:"客戶 A（德國工具機廠），合作 8 年，年交易額約 1.8 億元，占營收約 4%。",
+   trade:"客戶 B（美國五金連鎖通路），合作 3 年，年交易額約 420 萬美元。",
+   tech:"客戶 C（日本品牌網通廠），合作 5 年，為前三大客戶。"},
+  {mfg:"發票 IV-2026-0612，金額 EUR 285,000，到期日 2026/8/31，已逾期 49 天。",
+   trade:"Invoice EX-26-0731，金額 USD 186,500，到期日 2026/8/20，已逾期 60 天。",
+   tech:"INV-JP-26-0415，金額 JPY 48,600,000，到期日 2026/9/15，已逾期 34 天。"},
+  {mfg:"過去都準時付款，這是第一次逾期；對方表示正在更換 ERP 系統。",
+   trade:"過去一年有 3 次延遲 15 到 20 天；對方近期庫存偏高。",
+   tech:"一向準時，這次是對方內部驗收流程延誤。"},
+  {mfg:"可分兩期，11/15 前付清；不收遲延利息。",
+   trade:"可分三期，每期約 USD 62,000；若再逾期 30 天將暫停出貨。",
+   tech:"可延到 10/31，不需分期，但請對方提供確定付款日。"},
+  {mfg:"財務部應收帳款課 課長",trade:"財務經理",tech:"財務處 資深經理"}
+ ],
+ capex:[
+  {mfg:"購置自動化焊接產線：設備 8,500 萬元，加上安裝與教育訓練 600 萬元，2027 年 1 月一次付清。",
+   trade:"建置桃園自動化倉儲：總計 5,200 萬元（含倉儲管理系統 900 萬元），2027 年第一季分兩期付款。",
+   tech:"越南二廠新增 SMT 產線 4 條：總計 4 億元，2026/11 與 2027/1 各付一半。"},
+  {mfg:"每年節省人工 1,800 萬元、良率提升增加毛利 600 萬元；每年維護費 300 萬元；第 1 年產能只達 60%。",
+   trade:"每年節省倉租與人力 1,100 萬元；處理量提升後每年可多承接約 1.5 億元營收，毛利率 13%。",
+   tech:"滿載後每年增加營收 24 億元、毛利率 22%；產能利用率第 1 年 50%、第 2 年 80%、第 3 年起 90%。"},
+  {mfg:"WACC 7.5%",trade:"公司要求報酬率 9%",tech:"WACC 8.5%，越南國家風險另加 1%"},
+  {mfg:"使用 10 年，期末殘值 500 萬元。",trade:"使用 8 年，期末無殘值。",tech:"使用 8 年，殘值為設備成本的 5%。"},
+  {mfg:"營所稅 20%，直線法折舊。",trade:"營所稅 20%，直線法折舊。",tech:"台灣與越南稅率皆為 20%（越南新廠前 2 年免稅），直線法折舊。"}
+ ],
+ tax:[
+  {mfg:"中華民國（台灣），2026 年度。",trade:"中華民國（台灣），2026 年度；交易另涉及越南與美國。",tech:"中華民國（台灣），2026 年度。"},
+  {mfg:"股份有限公司，上櫃，有大陸及越南轉投資。",trade:"股份有限公司，非公開發行，年營業額約 28 億元。",tech:"股份有限公司，上市，在越南、美國設有子公司。"},
+  {mfg:"擬支付德國公司技術授權金 EUR 120,000，對方在台灣沒有固定營業場所。想確認扣繳率，以及能否適用台德租稅協定的優惠稅率。",
+   trade:"向越南供應商買進原料，直接從越南出貨給美國客戶（三角貿易）。想確認營業稅能否適用零稅率，以及要保留哪些憑證。",
+   tech:"母公司支付美國子公司研發服務費 150 萬美元。想確認移轉訂價需準備的文據，以及這筆費用能否申請研發投資抵減。"},
+  {mfg:"所得稅法第 88 條、各類所得扣繳率標準、台德租稅協定（請 AI 協助核對條次）。",
+   trade:"營業稅法第 7 條（零稅率）、統一發票使用辦法（請 AI 協助核對條次）。",
+   tech:"所得稅法第 43 條之 1、營利事業所得稅不合常規移轉訂價查核準則、產業創新條例第 10 條（請 AI 協助核對條次）。"}
+ ],
+ excel:[
+  {mfg:"Microsoft 365（可以用 XLOOKUP、FILTER）",trade:"Excel 2016（沒有 XLOOKUP）",tech:"Microsoft 365，資料由 SAP 匯出"},
+  {mfg:`料號｜品名｜倉別｜數量｜單位成本｜最後異動日
+M-1001｜軸承座｜A1｜1,250｜385｜2026/09/28
+M-1002｜線性滑軌｜A2｜80｜4,200｜2026/03/15
+M-1003｜鋼板 6mm｜B1｜3,400｜210｜2026/09/30`,
+   trade:`出貨日｜Invoice｜客戶｜幣別｜金額｜匯率｜收款日
+2026/08/05｜EX-26-0801｜B｜USD｜86,500｜31.6｜2026/10/04
+2026/08/12｜EX-26-0812｜D｜EUR｜42,000｜34.8｜（未收）
+2026/08/20｜EX-26-0820｜E｜USD｜120,300｜31.8｜2026/10/15`,
+   tech:`專案代號｜部門｜月份｜人事費｜材料費｜外包費
+P-W7｜RD1｜2026/07｜8,200,000｜1,350,000｜600,000
+P-W7｜RD1｜2026/08｜8,450,000｜2,100,000｜0
+P-IOT3｜RD2｜2026/08｜5,100,000｜480,000｜950,000`},
+  {mfg:"依「最後異動日」算出呆滯天數，分成 0–90、91–180、181–365、365 天以上四級，並加總各級存貨金額。",
+   trade:"自動算出每張發票的新台幣金額與收款天數，並列出尚未收款且超過 60 天的清單。",
+   tech:"做出「專案 × 月份」的費用樞紐表，並計算各專案累計費用占年度預算的比例。"},
+  {mfg:"目前寫法 =IF(TODAY()-F2>180,\"呆滯\",\"正常\")，資料多時很慢，日期空白時會判斷錯誤。",
+   trade:"目前用 =VLOOKUP(C2,客戶!A:D,4,0) 查客戶付款條件，常出現 #N/A。",
+   tech:"樞紐分析表每個月都要手動重設資料範圍，常漏掉新增的列。"}
+ ]
+};
+const EXG={
+ co:{mfg:"精密機械零組件製造商（虛構），上櫃公司，年營收約 45 億元，員工 1,200 人，主要客戶為歐美工具機廠，原料以鋼材為主。",
+     trade:"五金與塑膠原料進出口貿易商（虛構），年營收約 28 億元，員工 180 人，約 70% 營收以美元計價，主要市場為美國與東南亞。",
+     tech:"網通設備與 IoT 模組廠（虛構），上市公司，年營收約 120 億元，員工 2,500 人，台灣研發、越南生產。"},
+ period:{mfg:"2026 年 9 月單月與 1–9 月累計；新台幣千元。",trade:"2026 年 9 月單月與 1–9 月累計；新台幣千元，美元以月底匯率 32.4 換算。",tech:"2026 年第三季與 1–9 月累計；新台幣千元。"},
+ rel:{mfg:"對方是合作 8 年的歐洲客戶，希望維持長期關係。",trade:"對方是合作 3 年的美國通路商，近期議價態度強硬。",tech:"對方是前三大客戶，往來窗口為採購與財務部門。"},
+ example:{all:"上個月我們的差異說明寫法：\n「製造費用超支 330 萬元（+6.3%），主因為 CNC 設備大修 280 萬元一次認列，屬非經常性；排除後差異為 +1.0%，在容許範圍內。」"},
+ gaap:{mfg:"上櫃公司，適用我國 IFRS 會計準則（TIFRS）。",trade:"非公開發行公司，適用企業會計準則公報（EAS）。",tech:"上市公司，適用 TIFRS，子公司依 IFRS 編製合併報表。"}
+};
+const pickEx=o=>o?(o[S.ind]||o.all||""):"";
+
+const S={ind:"mfg",applied:new Set(),scen:"bva",role:0,roleCustom:"",levels:new Set([0]),tasks:new Set([0,1]),taskCustom:"",aud:0,fmt:1,len:1,methods:new Set(["cot","assume","tw"]),lastMethod:"cot",co:"",period:"",done:new Set()};
 const $=id=>document.getElementById(id);
 const esc=s=>s.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
 const cur=()=>SCEN.find(s=>s.id===S.scen);
@@ -321,7 +520,8 @@ function fill(el,items){el.replaceChildren(...items)}
 
 function renderBuilder(){
   const sc=cur();
-  fill($("scen"),SCEN.map(s=>{const b=document.createElement("button");b.type="button";b.setAttribute("aria-pressed",s.id===S.scen);b.innerHTML=`<strong>${s.name}</strong><span>${s.desc}</span>`;b.onclick=()=>{S.scen=s.id;S.role=0;S.tasks=new Set(s.def);S.done=new Set();update()};return b}));
+  fill($("scen"),SCEN.map(s=>{const b=document.createElement("button");b.type="button";b.setAttribute("aria-pressed",s.id===S.scen);b.innerHTML=`<strong>${s.name}</strong><span>${s.desc}</span>`;b.onclick=()=>{S.scen=s.id;S.role=0;S.tasks=new Set(s.def);S.done=new Set();S.applied=new Set();update()};return b}));
+  fill($("inds"),IND.map(d=>chip(d.name,S.ind===d.id,()=>{S.ind=d.id;update()})));
   fill($("roles"),sc.roles.map((r,i)=>chip(r,!S.roleCustom&&S.role===i,()=>{S.role=i;S.roleCustom="";$("role-custom").value="";update()})));
   fill($("levels"),LEVELS.map((l,i)=>chip(l,S.levels.has(i),()=>{toggle(S.levels,i);update()},true)));
   fill($("tasks"),sc.tasks.map((t,i)=>chip(t,S.tasks.has(i),()=>{toggle(S.tasks,i);update()},true)));
@@ -338,11 +538,12 @@ function roleText(){return S.roleCustom.trim()||cur().roles[S.role]}
 function taskList(){const sc=cur();const t=sc.tasks.filter((_,i)=>S.tasks.has(i));if(S.taskCustom.trim())t.push(S.taskCustom.trim());return t}
 function methodList(){return METHODS.filter(m=>S.methods.has(m.id))}
 function needList(){
-  const sc=cur();const out=sc.needs.map(n=>({k:n[0],why:n[1],src:"s"}));
-  methodList().forEach(m=>{if(m.need)out.push({k:m.need[0],why:m.need[1],src:"m"})});
-  if(!S.co.trim())out.push({k:"公司產業與規模",why:"同樣的費用率，在不同產業代表的意義完全不同",src:"s"});
-  if(!S.period.trim())out.push({k:"資料期間與幣別單位",why:"左側「期間與幣別」可直接填寫",src:"s"});
-  if(S.aud===4)out.push({k:"與對方的往來背景",why:"對外文件要拿捏語氣與揭露程度",src:"t"});
+  const sc=cur(),ex=EX[sc.id]||[];
+  const out=sc.needs.map((n,i)=>({k:n[0],why:n[1],src:"s",ex:pickEx(ex[i])}));
+  methodList().forEach(m=>{if(m.need)out.push({k:m.need[0],why:m.need[1],src:"m",ex:pickEx(EXG[m.id])})});
+  if(!S.co.trim())out.push({k:"公司產業與規模",why:"同樣的費用率，在不同產業代表的意義完全不同",src:"s",ex:pickEx(EXG.co)});
+  if(!S.period.trim())out.push({k:"資料期間與幣別單位",why:"左側「期間與幣別」可直接填寫",src:"s",ex:pickEx(EXG.period)});
+  if(S.aud===4)out.push({k:"與對方的往來背景",why:"對外文件要拿捏語氣與揭露程度",src:"t",ex:pickEx(EXG.rel)});
   return out;
 }
 function followList(){
@@ -374,7 +575,12 @@ function buildPrompt(html){
   if(ms.length)ms.forEach(m=>{const parts=m.text.split("\n");r+=w("- "+parts[0])+"\n";if(parts[1])r+="  "+P(parts[1])+"\n"});
   else r+=P("【請選擇至少一種方法，讓結果更可靠】")+"\n";
   r+="\n"+H("d","# 補充資料")+"\n";
-  needList().forEach(n=>r+=w(`- ${n.k}：`)+P("【請貼上或說明】")+"\n");
+  needList().forEach(n=>{
+    if(S.applied.has(n.k)&&n.ex){
+      const lines=n.ex.split("\n"),body=lines.length>1?"\n"+lines.map(l=>"  "+l).join("\n"):lines[0];
+      r+=w(`- ${n.k}：`)+(html?`<span class="ap">${esc(body)}</span>`:body)+"\n";
+    }else r+=w(`- ${n.k}：`)+P("【請貼上或說明】")+"\n";
+  });
   return r.trimEnd();
 }
 
@@ -390,8 +596,13 @@ function renderResult(){
   $("follow").innerHTML=fl.map((f,i)=>`<li><span class="num">${String(i+1).padStart(2,"0")}</span><span>${esc(f.q)}<span class="why"><span class="src ${f.src}">${srcName[f.src]}</span></span></span><button class="copy-one" type="button" data-q="${i}">複製</button></li>`).join("");
   $("follow").querySelectorAll(".copy-one").forEach(b=>b.onclick=()=>copy(fl[+b.dataset.q].q,b));
   const nl=needList();$("n-n").textContent=nl.length;
-  $("needs").innerHTML=nl.map((n,i)=>{const id="need-"+i,d=S.done.has(n.k);return `<li class="need ${d?"done":""}"><input type="checkbox" id="${id}" ${d?"checked":""} data-k="${esc(n.k)}"><label for="${id}"><strong>${esc(n.k)}</strong><span class="why">${esc(n.why)}</span></label></li>`}).join("");
-  $("needs").querySelectorAll("input").forEach(c=>c.onchange=()=>{toggle(S.done,c.dataset.k);renderResult()});
+  $("ind-name").textContent=IND.find(d=>d.id===S.ind).name;
+  $("needs").innerHTML=nl.map((n,i)=>{const id="need-"+i,d=S.done.has(n.k),ap=S.applied.has(n.k);
+    const ex=n.ex?`<div class="ex"><div class="ex-head"><span>參考範例｜${IND.find(x=>x.id===S.ind).name}</span><div><button class="ex-btn" type="button" data-copy="${i}">複製</button><button class="ex-btn" type="button" data-apply="${i}" aria-pressed="${ap}">${ap?"已套用":"套用到指令"}</button></div></div><pre>${esc(n.ex)}</pre></div>`:"";
+    return `<li class="need ${d?"done":""}"><input type="checkbox" id="${id}" ${d?"checked":""} data-i="${i}" aria-label="已備妥：${esc(n.k)}"><div class="body"><label for="${id}"><strong>${esc(n.k)}</strong><span class="why">${esc(n.why)}</span></label>${ex}</div></li>`}).join("");
+  $("needs").querySelectorAll("input").forEach(c=>c.onchange=()=>{toggle(S.done,nl[+c.dataset.i].k);renderResult()});
+  $("needs").querySelectorAll("[data-copy]").forEach(b=>b.onclick=()=>copy(nl[+b.dataset.copy].ex,b));
+  $("needs").querySelectorAll("[data-apply]").forEach(b=>b.onclick=()=>{toggle(S.applied,nl[+b.dataset.apply].k);renderResult()});
 }
 
 function update(){renderBuilder();renderResult()}
@@ -403,14 +614,16 @@ async function copy(text,btn){
     try{ok=document.execCommand("copy")}catch(_){}ta.remove();
   }
   const msg=ok?"已複製":"無法自動複製，請手動選取文字";
-  if(btn&&btn.classList.contains("copy-one")){const o=btn.textContent;btn.textContent=ok?"已複製":"請手動";setTimeout(()=>btn.textContent=o,1400)}
+  if(btn){const o=btn.textContent;btn.textContent=ok?"已複製":"請手動";setTimeout(()=>btn.textContent=o,1400)}
   else{$("toast").textContent=msg;setTimeout(()=>$("toast").textContent="",1800)}
 }
 $("copy-prompt").onclick=()=>copy(buildPrompt(false));
 $("copy-all").onclick=()=>{
-  const txt=buildPrompt(false)+"\n\n===== 建議追問方向 =====\n"+followList().map((f,i)=>`${i+1}. ${f.q}`).join("\n")+"\n\n===== 需要補充的資料或背景 =====\n"+needList().map(n=>`□ ${n.k}（${n.why}）`).join("\n");
+  const txt=buildPrompt(false)+"\n\n===== 建議追問方向 =====\n"+followList().map((f,i)=>`${i+1}. ${f.q}`).join("\n")+"\n\n===== 需要補充的資料或背景 =====\n"+needList().map(n=>`□ ${n.k}（${n.why}）`+(n.ex?`\n  參考範例：${n.ex.split("\n").join("\n  ")}`:"")).join("\n");
   copy(txt);
 };
+$("apply-all").onclick=()=>{needList().forEach(n=>{if(n.ex)S.applied.add(n.k)});renderResult()};
+$("apply-none").onclick=()=>{S.applied=new Set();renderResult()};
 $("role-custom").oninput=e=>{S.roleCustom=e.target.value;renderBuilder();renderResult()};
 $("task-custom").oninput=e=>{S.taskCustom=e.target.value;renderResult()};
 $("ctx-co").oninput=e=>{S.co=e.target.value;renderResult()};
