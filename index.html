@@ -17,7 +17,7 @@
   --t:#9c9440; --t-soft:#f2f0dc;
   --m:#8d6aa6; --m-soft:#efe8f4;
   --slip:#fdfcf8; --slip-line:#d9d3c5;
-  --ok:#3f7d55;
+  --ok:#3f7d55; --brand-soft:#f1ebe0; --ph:#efe4d0; --ap:#dcefe2;
   --f-display:"Noto Serif TC","Songti TC","PMingLiU",serif;
   --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
   --f-mono:"IBM Plex Mono","Noto Sans TC",ui-monospace,monospace;
@@ -26,12 +26,12 @@
   --bg:#191816; --panel:#22201d; --ink:#ece8e0; --muted:#a59f93; --line:#38352f;
   --brand:#c9ab7c; --brand-ink:#1b1915;
   --a:#dc9b8f; --a-soft:#3a2724; --t:#cbc26a; --t-soft:#33311d; --m:#c09ddb; --m-soft:#2f2638;
-  --slip:#1f1e1b; --slip-line:#45413a; --ok:#7cc495; color-scheme:dark}}
+  --slip:#1f1e1b; --slip-line:#45413a; --ok:#7cc495; --brand-soft:#2e2921; --ph:#3d3426; --ap:#22382b; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#191816; --panel:#22201d; --ink:#ece8e0; --muted:#a59f93; --line:#38352f;
   --brand:#c9ab7c; --brand-ink:#1b1915;
   --a:#dc9b8f; --a-soft:#3a2724; --t:#cbc26a; --t-soft:#33311d; --m:#c09ddb; --m-soft:#2f2638;
-  --slip:#1f1e1b; --slip-line:#45413a; --ok:#7cc495; color-scheme:dark}
+  --slip:#1f1e1b; --slip-line:#45413a; --ok:#7cc495; --brand-soft:#2e2921; --ph:#3d3426; --ap:#22382b; color-scheme:dark}
 
 *{box-sizing:border-box}
 body{margin:0}
@@ -83,7 +83,7 @@ button{font:inherit;color:inherit}
 .scen button:hover{border-color:var(--muted)}
 .scen button strong{display:block;font-size:14.5px}
 .scen button span{font-size:12px;color:var(--muted)}
-.scen button[aria-pressed="true"]{border-color:var(--brand);background:color-mix(in srgb,var(--brand) 12%,var(--panel))}
+.scen button[aria-pressed="true"]{border-color:var(--brand);background:var(--brand-soft)}
 
 .field{display:flex;flex-direction:column;gap:4px;min-width:0}
 .field label{font-size:12.5px;color:var(--muted)}
@@ -115,7 +115,7 @@ button{font:inherit;color:inherit}
 .prompt{font-family:var(--f-mono);font-size:13.2px;line-height:1.75;white-space:pre-wrap;word-break:break-word;margin:0;max-height:min(62vh,640px);overflow:auto;padding-right:4px}
 .prompt .h{font-weight:500}
 .prompt .h.a{color:var(--a)} .prompt .h.t{color:var(--t)} .prompt .h.m{color:var(--m)} .prompt .h.d{color:var(--brand)}
-.prompt .ph{background:color-mix(in srgb,var(--brand) 18%,transparent);border-radius:3px;padding:0 2px}
+.prompt .ph{background:var(--ph);border-radius:3px;padding:0 2px}
 .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;padding-top:14px;border-top:1px dashed var(--slip-line)}
 .btn{border:1.5px solid var(--ink);background:var(--ink);color:var(--bg);border-radius:8px;padding:8px 14px;cursor:pointer;font-size:14px;font-weight:500}
 .btn.ghost{background:transparent;color:var(--ink)}
@@ -141,8 +141,8 @@ button{font:inherit;color:inherit}
 .bulk{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
 .btn.sm{padding:5px 11px;font-size:13px;border-width:1px}
 .fake{font-size:12px;color:var(--muted)}
-.step.s0 .chip[aria-pressed="true"]{background:color-mix(in srgb,var(--brand) 14%,var(--panel));border-color:var(--brand)}
-.prompt .ap{background:color-mix(in srgb,var(--ok) 14%,transparent);border-radius:3px}
+.step.s0 .chip[aria-pressed="true"]{background:var(--brand-soft);border-color:var(--brand)}
+.prompt .ap{background:var(--ap);border-radius:3px}
 .intro{font-size:13.5px;color:var(--muted);margin:0 0 12px}
 .compare{margin-top:14px;font-size:13.5px}
 .compare summary{cursor:pointer;color:var(--muted)}
@@ -150,6 +150,69 @@ button{font:inherit;color:inherit}
 .compare ul{margin:8px 0 0;padding-left:20px;color:var(--muted)}
 .safety{margin-top:14px;font-size:12.5px;color:var(--muted);line-height:1.6;padding:10px 14px;border-left:3px solid var(--brand);background:var(--panel);border-radius:0 8px 8px 0}
 .safety b{color:var(--ink)}
+/* Mobile bar: 手機與平板直向時固定在底部，隨時看到 ATM 完成度並一鍵跳到結果 */
+.mbar{display:none}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+button,input,textarea{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+
+@media (max-width:900px){
+  .wrap{padding-block:18px calc(96px + env(safe-area-inset-bottom,0px))}
+  .top{grid-template-columns:minmax(0,1fr);gap:14px}
+  .top p{max-width:none}
+  .work{gap:18px;margin-top:18px}
+  .result{scroll-margin-top:12px}
+  .prompt{max-height:none}
+  .mbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:20;align-items:center;gap:10px;
+    padding:10px max(16px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));
+    background:var(--panel);border-top:1px solid var(--line);box-shadow:0 -6px 20px -12px rgba(0,0,0,.3);transition:transform .2s}
+  .mbar.away{transform:translateY(110%)}
+  .mbar .dots{display:flex;gap:6px;min-width:0;flex:1;align-items:center}
+  .mbar .dot{flex:none;width:28px;height:28px;border-radius:7px;display:grid;place-items:center;font-family:var(--f-display);font-weight:900;font-size:15px;color:var(--muted);border:1.5px solid var(--line);background:var(--bg)}
+  .mbar .dot.on.a{background:var(--a);border-color:var(--a);color:var(--panel)}
+  .mbar .dot.on.t{background:var(--t);border-color:var(--t);color:var(--panel)}
+  .mbar .dot.on.m{background:var(--m);border-color:var(--m);color:var(--panel)}
+  .mbar .lbl{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+  .mbar .btn{flex:none;min-height:44px;padding:10px 16px}
+}
+@media (max-width:720px){
+  .top{grid-template-columns:minmax(0,1fr);gap:14px;padding-bottom:16px}
+  .top h1{font-size:28px}
+  .top p{font-size:14px}
+  .legend{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+  .key{padding:5px 8px 5px 5px;gap:6px;min-width:0}
+  .key b{width:26px;height:26px;font-size:16px;flex:none}
+  .key span{font-size:13px;min-width:0}
+  .key small{display:none}
+  .step{padding:14px 14px 16px;border-radius:12px}
+  .step-head{gap:10px}
+  .badge{width:32px;height:32px;font-size:17px}
+  .step-head h2{font-size:17px}
+  .step-head p{font-size:13px}
+  .scen{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .scen button{padding:9px 10px}
+  .scen button strong{font-size:14px}
+  .chips{gap:6px}
+  .chip{font-size:14px;padding:8px 12px;min-height:40px;max-width:100%;text-align:left}
+  .field input,.field textarea{font-size:16px}
+  .slip-top{padding:12px 14px}
+  .meter{padding:10px 14px;gap:5px}
+  .meter .seg{font-size:12px}
+  .meter .score{display:none}
+  .tabs button{padding:11px 10px;font-size:14px}
+  .pane{padding:14px}
+  .prompt{font-size:13px;line-height:1.7}
+  .actions .btn{flex:1 1 auto;min-height:44px}
+  .list li{padding:10px;gap:8px}
+  .list li:not(.need){grid-template-columns:auto minmax(0,1fr)}
+  .list li:not(.need) .copy-one{grid-column:2;justify-self:start;padding:5px 12px}
+  .ex-head{padding:6px 8px}
+  .ex-btn{padding:5px 10px;min-height:32px}
+  .ex pre{font-size:12px;padding:8px}
+}
+@media (max-width:360px){
+  .scen{grid-template-columns:minmax(0,1fr)}
+}
+@media (hover:none){.chip:hover,.scen button:hover{border-color:var(--line)}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -160,7 +223,7 @@ button{font:inherit;color:inherit}
     <div>
       <div class="eyebrow">給財務人員的 AI 指令練習</div>
       <h1>ATM 財務指令工坊</h1>
-      <p>先選一個工作情境，再依序點選角色、目標、方法。右邊會即時組好一段可以直接貼進 ChatGPT、Copilot 或 Claude 的指令，並附上追問方向與需要補充的資料。</p>
+      <p>先選一個工作情境，再依序點選角色、目標、方法。結果區會即時組好一段可以直接貼進 ChatGPT、Copilot 或 Claude 的指令，並附上追問方向與需要補充的資料。</p>
     </div>
     <div class="legend" aria-label="ATM 指令架構">
       <div class="key a"><b>A</b><span>角色<small>請 AI 扮演誰</small></span></div>
@@ -174,7 +237,7 @@ button{font:inherit;color:inherit}
       <div class="step s0">
         <div class="step-head"><div class="badge">情</div><div><h2>選擇工作情境</h2><p>每個情境會帶出建議的角色、任務、追問與資料清單。</p></div></div>
         <div class="scen" id="scen"></div>
-        <div class="sub">範例產業（右側「需補充資料」會依此提供參考範例）</div>
+        <div class="sub">範例產業（「需補充資料」會依此提供參考範例）</div>
         <div class="chips" id="inds" role="group" aria-label="範例產業"></div>
         <div class="grid2" style="margin-top:14px">
           <div class="field"><label for="ctx-co">公司產業與規模（選填）</label><input id="ctx-co" placeholder="例：電子零組件製造，年營收約 30 億"></div>
@@ -209,7 +272,7 @@ button{font:inherit;color:inherit}
       </div>
     </section>
 
-    <aside class="result" aria-label="產出結果">
+    <aside class="result" id="result" aria-label="產出結果">
       <div class="slip">
         <div class="slip-top"><h2>指令明細</h2><small id="slip-id"></small></div>
         <div class="meter" id="meter"></div>
@@ -253,6 +316,11 @@ button{font:inherit;color:inherit}
     </aside>
   </div>
 </div>
+
+<nav class="mbar" id="mbar" aria-label="指令完成度">
+  <div class="dots"><span class="dot a" id="mb-a">A</span><span class="dot t" id="mb-t">T</span><span class="dot m" id="mb-m">M</span><span class="lbl" id="mb-lbl"></span></div>
+  <button class="btn" type="button" id="mb-go">查看指令</button>
+</nav>
 
 <script>
 const SCEN = [
@@ -877,6 +945,7 @@ function renderResult(){
   const sc=cur(),a=!!roleText(),t=taskList().length>0,m=methodList().length>0;
   const score=[a,t,m].filter(Boolean).length;
   $("meter").innerHTML=`<span class="seg a ${a?"on":""}"><i>A</i>角色</span><span class="seg t ${t?"on":""}"><i>T</i>目標 ${taskList().length} 項</span><span class="seg m ${m?"on":""}"><i>M</i>方法 ${methodList().length} 項</span><span class="score">${score}/3 完成</span>`;
+  renderBar();
   $("slip-id").textContent=`情境 ${String(SCEN.indexOf(sc)+1).padStart(2,"0")}｜${sc.name}`;
   $("prompt").innerHTML=buildPrompt(true);
   $("bad").textContent="「"+sc.bad+"」";
@@ -895,6 +964,16 @@ function renderResult(){
 }
 
 function update(){renderBuilder();renderResult()}
+function renderBar(){
+  const a=!!roleText(),t=taskList().length>0,m=methodList().length>0;
+  $("mb-a").classList.toggle("on",a);$("mb-t").classList.toggle("on",t);$("mb-m").classList.toggle("on",m);
+  $("mb-lbl").textContent=cur().name+"｜"+IND.find(d=>d.id===S.ind).name;
+}
+$("mb-go").onclick=()=>{$("result").scrollIntoView({behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth",block:"start"})};
+if("IntersectionObserver" in window){
+  new IntersectionObserver(es=>es.forEach(e=>$("mbar").classList.toggle("away",e.isIntersecting)),{rootMargin:"0px 0px -50% 0px"}).observe($("result"));
+}
+
 
 async function copy(text,btn){
   let ok=false;
