@@ -239,9 +239,11 @@ button,input,textarea{-webkit-tap-highlight-color:transparent;touch-action:manip
         <div class="scen" id="scen"></div>
         <div class="sub">範例產業（「需補充資料」會依此提供參考範例）</div>
         <div class="chips" id="inds" role="group" aria-label="範例產業"></div>
+        <div class="sub">公司類型（選填，再點一次可取消）</div>
+        <div class="chips" id="sizes" role="group" aria-label="公司類型"></div>
         <div class="grid2" style="margin-top:14px">
-          <div class="field"><label for="ctx-co">公司產業與規模（選填）</label><input id="ctx-co" placeholder="例：電子零組件製造，年營收約 30 億"></div>
-          <div class="field"><label for="ctx-period">期間與幣別（選填）</label><input id="ctx-period" placeholder="例：2026 年 9 月，新台幣千元"></div>
+          <div class="field"><label for="ctx-co">公司產業與營收規模（選填）</label><input id="ctx-co" placeholder="例：電子零組件製造，年營收約 30 億"></div>
+          <div class="field"><label for="ctx-period">資料期間（選填）</label><input id="ctx-period" placeholder="例：2026 年 9 月與 1–9 月累計"></div>
         </div>
       </div>
 
@@ -867,7 +869,8 @@ Object.assign(EXG.gaap,{
 
 const pickEx=o=>o?(o[S.ind]||o.all||""):"";
 
-const S={ind:"mfg",applied:new Set(),scen:"bva",role:0,roleCustom:"",levels:new Set([0]),tasks:new Set([0,1]),taskCustom:"",aud:0,fmt:1,len:1,methods:new Set(["cot","assume","tw"]),lastMethod:"cot",co:"",period:"",done:new Set()};
+const SIZES=["上市櫃公司","興櫃公司","大型企業","外商公司","中小企業","政府或法人機構"];
+const S={size:-1,ind:"mfg",applied:new Set(),scen:"bva",role:0,roleCustom:"",levels:new Set([0]),tasks:new Set([0,1]),taskCustom:"",aud:0,fmt:1,len:1,methods:new Set(["cot","assume","tw"]),lastMethod:"cot",co:"",period:"",done:new Set()};
 const $=id=>document.getElementById(id);
 const esc=s=>s.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
 const cur=()=>SCEN.find(s=>s.id===S.scen);
@@ -879,6 +882,7 @@ function renderBuilder(){
   const sc=cur();
   fill($("scen"),SCEN.map(s=>{const b=document.createElement("button");b.type="button";b.setAttribute("aria-pressed",s.id===S.scen);b.innerHTML=`<strong>${s.name}</strong><span>${s.desc}</span>`;b.onclick=()=>{S.scen=s.id;S.role=0;S.tasks=new Set(s.def);S.done=new Set();S.applied=new Set();update()};return b}));
   fill($("inds"),IND.map(d=>chip(d.name,S.ind===d.id,()=>{S.ind=d.id;update()})));
+  fill($("sizes"),SIZES.map((z,i)=>chip(z,S.size===i,()=>{S.size=S.size===i?-1:i;update()})));
   fill($("roles"),sc.roles.map((r,i)=>chip(r,!S.roleCustom&&S.role===i,()=>{S.role=i;S.roleCustom="";$("role-custom").value="";update()})));
   fill($("levels"),LEVELS.map((l,i)=>chip(l,S.levels.has(i),()=>{toggle(S.levels,i);update()},true)));
   fill($("tasks"),sc.tasks.map((t,i)=>chip(t,S.tasks.has(i),()=>{toggle(S.tasks,i);update()},true)));
@@ -898,8 +902,8 @@ function needList(){
   const sc=cur(),ex=EX[sc.id]||[];
   const out=sc.needs.map((n,i)=>({k:n[0],why:n[1],src:"s",ex:pickEx(ex[i])}));
   methodList().forEach(m=>{if(m.need)out.push({k:m.need[0],why:m.need[1],src:"m",ex:pickEx(EXG[m.id])})});
-  if(!S.co.trim())out.push({k:"公司產業與規模",why:"同樣的費用率，在不同產業代表的意義完全不同",src:"s",ex:pickEx(EXG.co)});
-  if(!S.period.trim())out.push({k:"資料期間與幣別單位",why:"左側「期間與幣別」可直接填寫",src:"s",ex:pickEx(EXG.period)});
+  if(!S.co.trim())out.push({k:"公司產業與營收規模",why:"同樣的費用率，在不同產業代表的意義完全不同；情境區可直接填寫",src:"s",ex:pickEx(EXG.co)});
+  if(!S.period.trim())out.push({k:"資料期間與金額單位",why:"期間可在情境區填寫；金額單位寫在資料表上，避免 AI 把千元當成元",src:"s",ex:pickEx(EXG.period)});
   if(S.aud===4)out.push({k:"與對方的往來背景",why:"對外文件要拿捏語氣與揭露程度",src:"t",ex:pickEx(EXG.rel)});
   return out;
 }
@@ -921,7 +925,8 @@ function buildPrompt(html){
   let r=H("a","# 角色（A）")+"\n";
   r+=w(`你是一位${roleText()}，${sc.skill}${lv.length?"，"+lv.join("，"):""}。`)+"\n\n";
   r+=H("t","# 目標（T）")+"\n";
-  const bg=[S.co.trim()&&`公司背景：${S.co.trim()}`,S.period.trim()&&`期間與幣別：${S.period.trim()}`].filter(Boolean);
+  const co=[S.size>=0&&SIZES[S.size],S.co.trim()].filter(Boolean).join("，");
+  const bg=[co&&`公司背景：${co}`,S.period.trim()&&`資料期間：${S.period.trim()}`].filter(Boolean);
   if(bg.length)r+=w(bg.join("；")+"。")+"\n";
   const t=taskList();
   if(t.length){r+=w(`我需要你協助「${sc.name}」，請完成以下任務：`)+"\n";t.forEach((x,i)=>r+=w(`${i+1}. ${x}`)+"\n")}
