@@ -239,6 +239,7 @@ button,input,textarea{-webkit-tap-highlight-color:transparent;touch-action:manip
         <div class="scen" id="scen"></div>
         <div class="sub">範例產業（「需補充資料」會依此提供參考範例）</div>
         <div class="chips" id="inds" role="group" aria-label="範例產業"></div>
+        <div class="field" id="ind-other-wrap" style="margin-top:10px" hidden><label for="ind-other">輸入你的產業</label><input id="ind-other" placeholder="例：營建工程、物流倉儲、醫療器材"></div>
         <div class="sub">公司類型（選填，再點一次可取消）</div>
         <div class="chips" id="sizes" role="group" aria-label="公司類型"></div>
         <div class="grid2" style="margin-top:14px">
@@ -400,7 +401,7 @@ const METHODS=[
  {id:"tw",name:"台灣用語",text:"請使用繁體中文與台灣財會慣用語。",tip:"<b>台灣用語</b>：避免出現「營收」與「營業收入」混用，或中國大陸用語。"},
 ];
 
-const IND=[{id:"mfg",name:"傳統製造"},{id:"trade",name:"外貿"},{id:"tech",name:"科技業"},{id:"inst",name:"電子儀器"},{id:"food",name:"連鎖餐飲"},{id:"apparel",name:"服飾品牌"},{id:"health",name:"保健品牌"},{id:"local",name:"地方商家"}];
+const IND=[{id:"mfg",name:"傳統製造"},{id:"trade",name:"外貿"},{id:"tech",name:"科技業"},{id:"inst",name:"電子儀器"},{id:"food",name:"連鎖餐飲"},{id:"apparel",name:"服飾品牌"},{id:"health",name:"保健品牌"},{id:"local",name:"地方商家"},{id:"other",name:"其他"}];
 // 需補充資料的參考範例：依情境的 needs 順序排列；all 代表三種產業共用。公司與數字皆為虛構。
 const EX={
  bva:[
@@ -867,10 +868,12 @@ Object.assign(EXG.gaap,{
  health:"非公開發行公司，適用企業會計準則公報（EAS）。",
  local:"有限公司，適用商業會計法與企業會計準則公報（EAS）。"});
 
-const pickEx=o=>o?(o[S.ind]||o.all||""):"";
+// 「其他」產業沒有專屬範例，改用傳統製造的範例當格式參考
+const pickEx=o=>o?(o[S.ind==="other"?"mfg":S.ind]||o.all||""):"";
+const indName=()=>S.ind==="other"?(S.indOther.trim()||"你的產業"):IND.find(d=>d.id===S.ind).name;
 
 const SIZES=["上市櫃公司","興櫃公司","大型企業","外商公司","中小企業","政府或法人機構"];
-const S={size:-1,ind:"mfg",applied:new Set(),scen:"bva",role:0,roleCustom:"",levels:new Set([0]),tasks:new Set([0,1]),taskCustom:"",aud:0,fmt:1,len:1,methods:new Set(["cot","assume","tw"]),lastMethod:"cot",co:"",period:"",done:new Set()};
+const S={size:-1,ind:"mfg",indOther:"",applied:new Set(),scen:"bva",role:0,roleCustom:"",levels:new Set([0]),tasks:new Set([0,1]),taskCustom:"",aud:0,fmt:1,len:1,methods:new Set(["cot","assume","tw"]),lastMethod:"cot",co:"",period:"",done:new Set()};
 const $=id=>document.getElementById(id);
 const esc=s=>s.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
 const cur=()=>SCEN.find(s=>s.id===S.scen);
@@ -881,7 +884,8 @@ function fill(el,items){el.replaceChildren(...items)}
 function renderBuilder(){
   const sc=cur();
   fill($("scen"),SCEN.map(s=>{const b=document.createElement("button");b.type="button";b.setAttribute("aria-pressed",s.id===S.scen);b.innerHTML=`<strong>${s.name}</strong><span>${s.desc}</span>`;b.onclick=()=>{S.scen=s.id;S.role=0;S.tasks=new Set(s.def);S.done=new Set();S.applied=new Set();update()};return b}));
-  fill($("inds"),IND.map(d=>chip(d.name,S.ind===d.id,()=>{S.ind=d.id;update()})));
+  fill($("inds"),IND.map(d=>chip(d.name,S.ind===d.id,()=>{S.ind=d.id;update();if(d.id==="other")$("ind-other").focus()})));
+  $("ind-other-wrap").hidden=S.ind!=="other";
   fill($("sizes"),SIZES.map((z,i)=>chip(z,S.size===i,()=>{S.size=S.size===i?-1:i;update()})));
   fill($("roles"),sc.roles.map((r,i)=>chip(r,!S.roleCustom&&S.role===i,()=>{S.role=i;S.roleCustom="";$("role-custom").value="";update()})));
   fill($("levels"),LEVELS.map((l,i)=>chip(l,S.levels.has(i),()=>{toggle(S.levels,i);update()},true)));
@@ -902,7 +906,7 @@ function needList(){
   const sc=cur(),ex=EX[sc.id]||[];
   const out=sc.needs.map((n,i)=>({k:n[0],why:n[1],src:"s",ex:pickEx(ex[i])}));
   methodList().forEach(m=>{if(m.need)out.push({k:m.need[0],why:m.need[1],src:"m",ex:pickEx(EXG[m.id])})});
-  if(!S.co.trim())out.push({k:"公司產業與營收規模",why:"同樣的費用率，在不同產業代表的意義完全不同；情境區可直接填寫",src:"s",ex:pickEx(EXG.co)});
+  if(!S.co.trim())out.push({k:"公司產業與營收規模",why:"同樣的費用率，在不同產業代表的意義完全不同；情境區可直接填寫",src:"s",ex:S.ind==="other"?`${indName()}公司，年營收約〔　〕億元，員工約〔　〕人，主要客戶為〔　〕，主要成本為〔　〕。`:pickEx(EXG.co)});
   if(!S.period.trim())out.push({k:"資料期間與金額單位",why:"期間可在情境區填寫；金額單位寫在資料表上，避免 AI 把千元當成元",src:"s",ex:pickEx(EXG.period)});
   if(S.aud===4)out.push({k:"與對方的往來背景",why:"對外文件要拿捏語氣與揭露程度",src:"t",ex:pickEx(EXG.rel)});
   return out;
@@ -925,7 +929,7 @@ function buildPrompt(html){
   let r=H("a","# 角色（A）")+"\n";
   r+=w(`你是一位${roleText()}，${sc.skill}${lv.length?"，"+lv.join("，"):""}。`)+"\n\n";
   r+=H("t","# 目標（T）")+"\n";
-  const co=[S.size>=0&&SIZES[S.size],S.co.trim()].filter(Boolean).join("，");
+  const co=[S.size>=0&&SIZES[S.size],S.ind==="other"&&S.indOther.trim()&&`${S.indOther.trim()}產業`,S.co.trim()].filter(Boolean).join("，");
   const bg=[co&&`公司背景：${co}`,S.period.trim()&&`資料期間：${S.period.trim()}`].filter(Boolean);
   if(bg.length)r+=w(bg.join("；")+"。")+"\n";
   const t=taskList();
@@ -959,9 +963,9 @@ function renderResult(){
   $("follow").innerHTML=fl.map((f,i)=>`<li><span class="num">${String(i+1).padStart(2,"0")}</span><span>${esc(f.q)}<span class="why"><span class="src ${f.src}">${srcName[f.src]}</span></span></span><button class="copy-one" type="button" data-q="${i}">複製</button></li>`).join("");
   $("follow").querySelectorAll(".copy-one").forEach(b=>b.onclick=()=>copy(fl[+b.dataset.q].q,b));
   const nl=needList();$("n-n").textContent=nl.length;
-  $("ind-name").textContent=IND.find(d=>d.id===S.ind).name;
+  $("ind-name").textContent=S.ind==="other"?"格式":indName();
   $("needs").innerHTML=nl.map((n,i)=>{const id="need-"+i,d=S.done.has(n.k),ap=S.applied.has(n.k);
-    const ex=n.ex?`<div class="ex"><div class="ex-head"><span>參考範例｜${IND.find(x=>x.id===S.ind).name}</span><div><button class="ex-btn" type="button" data-copy="${i}">複製</button><button class="ex-btn" type="button" data-apply="${i}" aria-pressed="${ap}">${ap?"已套用":"套用到指令"}</button></div></div><pre>${esc(n.ex)}</pre></div>`:"";
+    const ex=n.ex?`<div class="ex"><div class="ex-head"><span>${S.ind==="other"?`格式參考｜以傳統製造為例，請換成${esc(indName())}的資料`:"參考範例｜"+indName()}</span><div><button class="ex-btn" type="button" data-copy="${i}">複製</button><button class="ex-btn" type="button" data-apply="${i}" aria-pressed="${ap}">${ap?"已套用":"套用到指令"}</button></div></div><pre>${esc(n.ex)}</pre></div>`:"";
     return `<li class="need ${d?"done":""}"><input type="checkbox" id="${id}" ${d?"checked":""} data-i="${i}" aria-label="已備妥：${esc(n.k)}"><div class="body"><label for="${id}"><strong>${esc(n.k)}</strong><span class="why">${esc(n.why)}</span></label>${ex}</div></li>`}).join("");
   $("needs").querySelectorAll("input").forEach(c=>c.onchange=()=>{toggle(S.done,nl[+c.dataset.i].k);renderResult()});
   $("needs").querySelectorAll("[data-copy]").forEach(b=>b.onclick=()=>copy(nl[+b.dataset.copy].ex,b));
@@ -972,7 +976,7 @@ function update(){renderBuilder();renderResult()}
 function renderBar(){
   const a=!!roleText(),t=taskList().length>0,m=methodList().length>0;
   $("mb-a").classList.toggle("on",a);$("mb-t").classList.toggle("on",t);$("mb-m").classList.toggle("on",m);
-  $("mb-lbl").textContent=cur().name+"｜"+IND.find(d=>d.id===S.ind).name;
+  $("mb-lbl").textContent=cur().name+"｜"+indName();
 }
 $("mb-go").onclick=()=>{$("result").scrollIntoView({behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth",block:"start"})};
 if("IntersectionObserver" in window){
@@ -999,6 +1003,7 @@ $("apply-all").onclick=()=>{needList().forEach(n=>{if(n.ex)S.applied.add(n.k)});
 $("apply-none").onclick=()=>{S.applied=new Set();renderResult()};
 $("role-custom").oninput=e=>{S.roleCustom=e.target.value;renderBuilder();renderResult()};
 $("task-custom").oninput=e=>{S.taskCustom=e.target.value;renderResult()};
+$("ind-other").oninput=e=>{S.indOther=e.target.value;renderResult()};
 $("ctx-co").oninput=e=>{S.co=e.target.value;renderResult()};
 $("ctx-period").oninput=e=>{S.period=e.target.value;renderResult()};
 const tabs=[["tab-p","pane-p"],["tab-f","pane-f"],["tab-n","pane-n"]];
