@@ -213,6 +213,50 @@ button,input,textarea{-webkit-tap-highlight-color:transparent;touch-action:manip
   .scen{grid-template-columns:minmax(0,1fr)}
 }
 @media (hover:none){.chip:hover,.scen button:hover{border-color:var(--line)}}
+/* App tabs: 指令產生器 / 追問技巧練習 */
+.apptabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:18px}
+.apptabs button{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;cursor:pointer;background:var(--panel);border:1.5px solid var(--line);border-radius:12px;padding:10px 14px;font-size:16px;font-weight:700;font-family:var(--f-display);min-width:0}
+.apptabs button small{font-family:var(--f-body);font-weight:400;font-size:12.5px;color:var(--muted)}
+.apptabs button[aria-selected="true"]{border-color:var(--brand);background:var(--brand-soft);box-shadow:inset 0 -3px 0 var(--brand)}
+.fu-on #mbar,body:not(.fu-on) #fbar{display:none!important}
+.homework{margin-top:22px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 18px;align-items:start}
+.homework h2{font-size:17px;font-weight:600;grid-column:1/-1}
+.homework ol{margin:0;padding-left:22px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 28px;grid-column:1/-1;font-size:14.5px}
+.homework em{font-style:normal;color:var(--brand);font-weight:700}
+.homework .go{grid-column:1/-1;justify-self:start;margin-top:4px}
+.fu-techs{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px}
+.fu-techs button{text-align:left;border:1.5px solid var(--line);background:var(--panel);border-radius:10px;padding:10px 12px;cursor:pointer;line-height:1.4;display:grid;grid-template-columns:auto minmax(0,1fr);gap:2px 10px;align-items:start}
+.fu-techs button b{grid-row:1/3;font-family:var(--f-mono);font-size:12px;color:var(--muted);padding-top:3px}
+.fu-techs button strong{font-size:14.5px}
+.fu-techs button span{font-size:12px;color:var(--muted)}
+.fu-techs button[aria-pressed="true"]{border-color:var(--brand);background:var(--brand-soft)}
+.fu-techs button[aria-pressed="true"] b{color:var(--brand)}
+.fu-detail{margin-top:12px;border-radius:10px;background:var(--bg);padding:12px 14px;font-size:14px}
+.fu-detail .hook{font-weight:700;color:var(--a)}
+.fu-detail blockquote{margin:6px 0;padding:6px 12px;border-left:3px solid var(--brand);font-family:var(--f-mono);font-size:13px;background:var(--panel);border-radius:0 6px 6px 0}
+.fu-detail p{margin:4px 0 0;color:var(--muted)}
+.fu-detail .cite{font-size:11.5px;color:var(--muted);margin-top:6px}
+.param{margin-top:4px}
+.param + .param{margin-top:14px}
+.param .hint{font-size:12.5px;color:var(--muted);margin-top:6px}
+.fu-prompt{font-family:var(--f-mono);font-size:15px;line-height:1.85;white-space:pre-wrap;word-break:break-word;margin:0;padding:14px 16px;background:var(--panel);border:1px solid var(--slip-line);border-radius:8px}
+.fu-prompt .var{background:var(--ph);border-radius:3px;padding:0 3px}
+.fu-sec{margin-top:14px}
+.fu-sec h3{font-family:var(--f-body);font-size:12.5px;letter-spacing:.08em;color:var(--muted);font-weight:700;margin:0 0 4px}
+.fu-sec p{margin:0;font-size:14px}
+.fu-flow{display:flex;gap:6px;padding:10px 18px;border-bottom:1px dashed var(--slip-line);flex-wrap:wrap}
+.fu-flow span{font-size:12px;padding:3px 10px;border-radius:999px;background:var(--bg);color:var(--muted)}
+.fu-flow span.on{background:var(--brand-soft);color:var(--ink)}
+.next-btn{background:var(--panel);border:1.5px solid var(--brand);color:var(--ink);border-radius:8px;padding:6px 12px;cursor:pointer;font-size:13.5px;margin-top:6px}
+@media (max-width:720px){
+  .apptabs button{padding:9px 11px;font-size:15px}
+  .homework{padding:14px}
+  .homework ol{grid-template-columns:minmax(0,1fr)}
+  .fu-techs{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .fu-prompt{font-size:14px;padding:12px}
+  .fu-flow{padding:10px 14px}
+}
+@media (max-width:360px){.fu-techs{grid-template-columns:minmax(0,1fr)}.apptabs button small{display:none}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -232,7 +276,12 @@ button,input,textarea{-webkit-tap-highlight-color:transparent;touch-action:manip
     </div>
   </header>
 
-  <div class="work">
+  <nav class="apptabs" role="tablist" aria-label="網站功能">
+    <button type="button" role="tab" id="app-gen" aria-selected="true" aria-controls="view-gen">指令產生器<small>用 ATM 組出第一版指令</small></button>
+    <button type="button" role="tab" id="app-fu" aria-selected="false" aria-controls="view-fu">追問技巧練習<small>拿到回答後，怎麼繼續問</small></button>
+  </nav>
+
+  <div class="work" id="view-gen" role="tabpanel" aria-labelledby="app-gen">
     <section class="builder" aria-label="指令設定">
       <div class="step s0">
         <div class="step-head"><div class="badge">情</div><div><h2>選擇工作情境</h2><p>每個情境會帶出建議的角色、任務、追問與資料清單。</p></div></div>
@@ -318,11 +367,64 @@ button,input,textarea{-webkit-tap-highlight-color:transparent;touch-action:manip
       <div class="safety"><b>使用前提醒：</b>不要貼上客戶個資、身分證字號、帳號或尚未公開的財報數字；請先改成代號或去識別化。AI 可能算錯或引用過時法規，所有數字與法條都要由你最後核對。</div>
     </aside>
   </div>
+
+  <section id="view-fu" role="tabpanel" aria-labelledby="app-fu" hidden>
+    <div class="homework">
+      <h2>課後練習｜財務策略的分析</h2>
+      <ol>
+        <li>從指令產生器選出<em>較有感</em>的指令，先問出第一版回答</li>
+        <li>適時提供公司<em>背景</em>、業務<em>現狀</em>、輔助<em>資料</em></li>
+        <li>留意<em>機敏</em>、<em>個資</em>、<em>營業秘密</em>等勿上傳</li>
+        <li>挑出回答<em>不滿意</em>、<em>不到位</em>的地方，用下面的技巧追問</li>
+      </ol>
+      <button class="btn ghost sm go" type="button" id="fu-to-gen">先到指令產生器拿第一版指令</button>
+    </div>
+    <div class="work">
+      <section class="builder" aria-label="追問設定">
+        <div class="step s0">
+          <div class="step-head"><div class="badge">1</div><div><h2>選擇追問技巧</h2><p>七種讓 AI 回答更深入、更嚴謹的追問方式。</p></div></div>
+          <div class="fu-techs" id="fu-techs"></div>
+          <div class="fu-detail" id="fu-detail"></div>
+        </div>
+        <div class="step s0">
+          <div class="step-head"><div class="badge">2</div><div><h2>設定變化</h2><p>換一個條件，追問的效果就不一樣。</p></div></div>
+          <div id="fu-params"></div>
+        </div>
+        <div class="step s0">
+          <div class="step-head"><div class="badge">3</div><div><h2>套入任務</h2><p>選擇你剛才請 AI 處理的財務工作。</p></div></div>
+          <div class="chips" id="fu-tasks" role="group" aria-label="財務任務"></div>
+          <div class="field" id="fu-custom-wrap" style="margin-top:12px" hidden><label for="fu-custom">輸入你剛才請 AI 處理的主題</label><input id="fu-custom" placeholder="例：第三季業務獎金制度調整"></div>
+        </div>
+      </section>
+      <aside class="result" id="fu-result" aria-label="追問指令">
+        <div class="slip">
+          <div class="slip-top"><h2>追問指令</h2><small id="fu-id"></small></div>
+          <div class="fu-flow" aria-hidden="true"><span class="on">1 選技巧</span><span class="on">2 設定變化</span><span class="on">3 套入任務</span><span class="on">4 取得追問</span></div>
+          <div class="pane">
+            <pre class="fu-prompt" id="fu-prompt"></pre>
+            <div class="actions">
+              <button class="btn" type="button" id="fu-copy">複製追問指令</button>
+              <span class="toast" id="fu-toast" aria-live="polite"></span>
+            </div>
+            <div class="fu-sec"><h3>為什麼有效</h3><p id="fu-why"></p></div>
+            <div class="fu-sec"><h3>適合什麼時候用</h3><p id="fu-when"></p></div>
+            <div class="fu-sec"><h3>AI 可能會怎麼回</h3><p id="fu-expect"></p></div>
+            <div class="fu-sec"><h3>下一招可以接著用</h3><p id="fu-next-txt"></p><button class="next-btn" type="button" id="fu-next"></button></div>
+          </div>
+        </div>
+        <div class="safety"><b>追問提醒：</b>追問前先貼上 AI 剛才的回答，或在同一個對話裡接著問。技巧只會讓 AI 更認真，不保證答案正確，數字和法條仍要自己核對。</div>
+      </aside>
+    </div>
+  </section>
 </div>
 
 <nav class="mbar" id="mbar" aria-label="指令完成度">
   <div class="dots"><span class="dot a" id="mb-a">A</span><span class="dot t" id="mb-t">T</span><span class="dot m" id="mb-m">M</span><span class="lbl" id="mb-lbl"></span></div>
   <button class="btn" type="button" id="mb-go">查看指令</button>
+</nav>
+<nav class="mbar" id="fbar" aria-label="目前的追問技巧">
+  <div class="dots"><span class="lbl" id="fb-lbl"></span></div>
+  <button class="btn" type="button" id="fb-go">查看追問指令</button>
 </nav>
 
 <script>
@@ -1009,6 +1111,124 @@ $("ctx-period").oninput=e=>{S.period=e.target.value;renderResult()};
 const tabs=[["tab-p","pane-p"],["tab-f","pane-f"],["tab-n","pane-n"]];
 tabs.forEach(([t,p])=>$(t).onclick=()=>tabs.forEach(([t2,p2])=>{$(t2).setAttribute("aria-selected",t2===t);$(p2).hidden=p2!==p}));
 update();
+
+// ===== 追問技巧練習 =====
+// 七種技巧整理自課程投影片（引用自 The weekend club）；V() 標出會隨設定或任務改變的字
+const V=x=>"⟦"+x+"⟧";
+const FU_TASKS=[
+ {id:"bva",name:"預算差異分析",topic:"預算差異分析",concept:"價格差異與數量差異的拆法",role:"資深財務分析師",wrong:["很明顯這個月製造費用超支，全都是原料漲價造成的，對吧？","很明顯差異小於 5% 的科目都不用說明，對吧？"],objection:"只看價格、沒拆數量，差異原因下得太粗"},
+ {id:"close",name:"月結與財報摘要",topic:"月結財報摘要",concept:"毛利率和營業利益率的差別",role:"會計主管",wrong:["很明顯營收比上月低，毛利率也一定跟著變差，對吧？","很明顯存貨增加代表生意變好，對吧？"],objection:"只跟上月比、沒跟去年同期比，看不出季節性"},
+ {id:"cash",name:"現金流預測",topic:"13 週現金流預測",concept:"獲利和現金流為什麼會不一樣",role:"資金管理專家",wrong:["很明顯帳上有獲利，現金就一定夠用，對吧？","很明顯應收帳款都會在到期日準時收回，對吧？"],objection:"收款時點假設太樂觀，沒考慮客戶延遲付款"},
+ {id:"capex",name:"投資案評估",topic:"投資案評估",concept:"NPV 和 IRR 的差別",role:"投資分析師",wrong:["很明顯 IRR 比較高的方案一定比較好，對吧？","很明顯回收期越短的投資就越值得做，對吧？"],objection:"折現率設得太低，高估了投資價值"},
+ {id:"audit",name:"費用稽核與異常",topic:"費用稽核結果",concept:"內部控制的職能分工",role:"內部稽核師",wrong:["很明顯金額小於 5,000 元的報銷都不用檢查，對吧？","很明顯有發票的費用就一定沒問題，對吧？"],objection:"異常判斷規則太寬鬆，會漏掉拆單報銷"},
+ {id:"ar",name:"應收帳款催收",topic:"應收帳款催收信",concept:"應收帳款週轉天數",role:"應收帳款主管",wrong:["很明顯催收信語氣越強硬，客戶就越快付款，對吧？","很明顯合作很久的老客戶逾期，不用太擔心，對吧？"],objection:"語氣太客氣，客戶不會當一回事"},
+ {id:"tax",name:"稅務與法規解讀",topic:"稅務法規解讀",concept:"暫時性差異與遞延所得稅",role:"稅務顧問",wrong:["很明顯只要有發票，所有費用都可以全額列報，對吧？","很明顯交際費沒有列支上限，對吧？"],objection:"引用的法條可能已經修正過"},
+ {id:"excel",name:"Excel 公式與自動化",topic:"Excel 公式",concept:"樞紐分析表的運作原理",role:"Excel 財務建模專家",wrong:["很明顯 VLOOKUP 一定比 XLOOKUP 好用，對吧？","很明顯 IF 疊越多層，判斷就越準確，對吧？"],objection:"公式太複雜，換人就沒辦法維護"},
+ {id:"custom",name:"自訂主題"}
+];
+const FU_TECHS=[
+ {id:"memory",name:"暗示 AI 有講過",hook:"直接跟 AI 說：「你昨天有講過」",ex:"你昨天跟我講過 React hooks，但我忘記你怎麼講 useEffect 那段了。",
+  why:"AI 會突然變得很認真，像是要對齊它「昨天」講過的內容、怕自己前後矛盾，所以講得更細、更深。就算是新對話也有效。",
+  when:"覺得回答太淺、只講概念，想請它把某一段拆細時。",expect:"從頭重新鋪陳，把你點名的那一段講得更完整，通常會補上步驟與例子。",
+  params:[{k:"part",label:"想請它補講哪一段",opts:["計算步驟","判斷標準","常見錯誤","怎麼向主管解釋"]},{k:"ask",label:"最後再加一句",opts:["請再完整講一次","請用我們公司的數字重新示範一次"]}],
+  build:(p,t)=>`你昨天跟我講過${V(t.concept)}，但我忘記你怎麼講${V(p.part)}那段了。${V(p.ask)}。`,next:"iq"},
+ {id:"iq",name:"讓 AI 變高智商",hook:"給它亂設一個 IQ",ex:"你是 IQ 145 的行銷高手，幫我分析這個活動。",
+  why:"回答會整個升級：更有架構、更像專家在講話。數字調一下，品質也會跟著變。",
+  when:"第一版回答太平、像網路文章，想要更有架構的專業分析時。",expect:"用分層架構重寫，加入專業框架與判斷依據，語氣更像資深顧問。",
+  params:[{k:"iq",label:"設定 IQ",opts:["130","145","160"],hints:["130：還行，架構稍微清楚一點","145：最常用，更有架構、更像專家","160：會開始講你沒聽過的原則，記得查證"]},{k:"role",label:"扮演的角色",opts:t=>[...new Set([t.role,"財務長","會計師事務所合夥人","企業併購顧問"])]}],
+  build:(p,t)=>`你是 IQ ${V(p.iq)} 的${V(p.role)}，幫我重新分析剛才的${V(t.topic)}。`,next:"memory"},
+ {id:"liar",name:"故意講假話模式",hook:"用「很明顯…對吧？」來釣它反駁你",ex:"很明顯 Python 比 JavaScript 更適合做 web app，對吧？",
+  why:"AI 反而不會無腦附和，會開始糾正你、補細節、講例外情況，等於把它的唱反調模式逼出來。",
+  when:"懷疑 AI 一直順著你講，想確認某個常見觀念有沒有例外時。",expect:"先指出這個說法不完全對，再列出條件、反例與實務上的例外。",
+  params:[{k:"claim",label:"選一個「故意講錯」的說法",opts:t=>t.wrong},{k:"add",label:"要不要多加一句",opts:["只問這一句","再請它列出例外情況"]}],
+  build:(p,t)=>V(p.claim)+(p.add==="再請它列出例外情況"?"如果有例外情況，也請一併列出來。":""),next:"bet"},
+ {id:"stage",name:"模擬群體演講",hook:"假裝你要上台演講，有觀眾在聽",ex:"用你在滿場觀眾前講課的方式，解釋區塊鏈。",
+  why:"回覆的寫法會直接換一套：更有節奏、更會鋪陳、會舉例，還會先回答大家可能會問的問題。比只叫它「講清楚一點」好太多。",
+  when:"要把分析結果報告給別人聽，或回答太像條列筆記、讀起來沒有重點時。",expect:"改成有開場、重點與結論的講稿，並預先回答聽眾可能提出的問題。",
+  params:[{k:"aud",label:"台下坐的是誰",opts:["董事會成員","剛報到的財務新人","業務部門主管","法說會的投資人"]},{k:"len",label:"報告時間",opts:["3 分鐘","10 分鐘"]}],
+  build:(p,t)=>`用你在滿場${V(p.aud)}面前上台報告的方式，花 ${V(p.len)}解釋${V(t.topic)}的重點。`,next:"metaphor"},
+ {id:"metaphor",name:"轉換領域作比喻",hook:"給它一個怪限制",ex:"只能用廚房比喻解釋這個概念。",
+  why:"它會被迫想一些更有創意的連結，反而更容易講到點上。限制可以隨便換：運動、電影、自然界、寵物都能用。",
+  when:"要向非財務同仁或主管解釋專業概念，或自己也還沒真正搞懂時。",expect:"用一個完整的比喻對應每個專業名詞，最後再拉回原本的概念。",
+  params:[{k:"domain",label:"只能用什麼比喻",opts:["廚房","運動","電影","自然界","寵物","自訂"],custom:"例：搭捷運、養盆栽"}],
+  build:(p,t)=>`只能用${V(p.domain)}比喻，解釋${V(t.concept)}。`,next:"stage"},
+ {id:"bet",name:"跟他打賭更嚴謹",hook:"跟它說：「我們賭 100 美金」",ex:"我們賭 100 美金：這段 code 到底有沒有寫得有效率？",
+  why:"一有「賭注」它就會突然更龜毛、更嚴謹：開始補假設、抓邊界案例、自己先反覆檢查、加一堆風險說明。想像中的錢等於真實的細節控。",
+  when:"回答裡有數字、計算或結論，需要它自己再檢查一遍時。",expect:"逐項重新驗算，列出原本沒說的假設、邊界情況與風險，必要時修正答案。",
+  params:[{k:"stake",label:"賭注",opts:["100 美金","1,000 美金","一個月的午餐"]},{k:"check",label:"賭什麼",opts:["數字到底有沒有算對","到底有沒有漏掉重要的風險","結論到底站不站得住腳"]}],
+  build:(p,t)=>`我們賭 ${V(p.stake)}：你剛才的${V(t.topic)}，${V(p.check)}？`,next:"debate"},
+ {id:"debate",name:"引發辯論或修正",hook:"直接搬出「有人不同意你」",ex:"我同事說你這方法錯了。你要嘛替自己辯護，要嘛承認他是對的。",
+  why:"這招會逼它真的去評估，而不是只講一堆概念。它會要嘛辯到很完整，要嘛開始承認哪裡有漏洞、哪裡要改前提。",
+  when:"準備把結論交出去之前，想先讓它自我檢討、找出弱點時。",expect:"逐點回應反對意見，說明哪些地方站得住、哪些前提需要修正，並給出修正版。",
+  params:[{k:"who",label:"誰不同意",opts:["我同事","我們的簽證會計師","財務長","稽核主管"]},{k:"reason",label:"要不要附上反對理由",opts:["不附理由","附上反對理由"]}],
+  build:(p,t)=>`${V(p.who)}說你這方法錯了${p.reason==="附上反對理由"?`，他認為${V(t.objection)}`:""}。你要嘛替自己辯護，要嘛承認他是對的。`,next:"liar"}
+];
+const FS={tech:"liar",task:"bva",custom:"",p:{},customOpt:""};
+function fuTask(){
+  const t=FU_TASKS.find(x=>x.id===FS.task);
+  if(t.id!=="custom")return t;
+  const tp=FS.custom.trim()||"這個主題";
+  return {name:"自訂主題",topic:tp,concept:tp,role:"資深財務專家",wrong:[`很明顯${tp}照現在的做法就沒問題了，對吧？`,`很明顯${tp}不需要考慮例外情況，對吧？`],objection:"這個做法忽略了一些重要的前提"};
+}
+const fuTech=()=>FU_TECHS.find(x=>x.id===FS.tech);
+const fuOpts=(pr,t)=>typeof pr.opts==="function"?pr.opts(t):pr.opts;
+function fuParams(){
+  const tc=fuTech(),t=fuTask(),cur=FS.p[tc.id]||(FS.p[tc.id]={}),out={};
+  tc.params.forEach(pr=>{const o=fuOpts(pr,t);let i=cur[pr.k]??(pr.k==="iq"?1:0);if(i>=o.length)i=0;cur[pr.k]=i;
+    out[pr.k]=pr.custom&&o[i]==="自訂"?(FS.customOpt.trim()||"〔請輸入〕"):o[i]});
+  return out;
+}
+function fuText(html){
+  const raw=fuTech().build(fuParams(),fuTask());
+  if(!html)return raw.replace(/[⟦⟧]/g,"");
+  return esc(raw).replace(/⟦(.*?)⟧/g,'<span class="var">$1</span>');
+}
+function renderFu(){
+  const tc=fuTech(),t=fuTask(),idx=FU_TECHS.indexOf(tc);
+  $("fu-techs").replaceChildren(...FU_TECHS.map((x,i)=>{const b=document.createElement("button");b.type="button";b.setAttribute("aria-pressed",x.id===FS.tech);
+    b.innerHTML=`<b>${String(i+1).padStart(2,"0")}</b><strong>${x.name}</strong><span>${esc(x.hook)}</span>`;b.onclick=()=>{FS.tech=x.id;renderFu()};return b}));
+  $("fu-detail").innerHTML=`<div class="hook">${esc(tc.hook)}</div><blockquote>例如：「${esc(tc.ex)}」</blockquote><p>${esc(tc.why)}</p><div class="cite">引用自：The weekend club</div>`;
+  const cur=FS.p[tc.id]||(FS.p[tc.id]={});fuParams();
+  const box=document.createElement("div");
+  tc.params.forEach(pr=>{const o=fuOpts(pr,t);const g=document.createElement("div");g.className="param";
+    g.innerHTML=`<div class="sub" style="margin-top:0">${pr.label}</div>`;const ch=document.createElement("div");ch.className="chips";
+    o.forEach((v,i)=>ch.appendChild(chip(v,cur[pr.k]===i,()=>{cur[pr.k]=i;renderFu();if(pr.custom&&v==="自訂")$("fu-copt").focus()})));g.appendChild(ch);
+    if(pr.hints){const h=document.createElement("div");h.className="hint";h.textContent=pr.hints[cur[pr.k]];g.appendChild(h)}
+    if(pr.custom&&o[cur[pr.k]]==="自訂"){const f=document.createElement("div");f.className="field";f.style.marginTop="10px";
+      f.innerHTML=`<label for="fu-copt">自訂比喻領域</label><input id="fu-copt" placeholder="${pr.custom}">`;g.appendChild(f);
+      const inp=f.querySelector("input");inp.value=FS.customOpt;inp.oninput=e=>{FS.customOpt=e.target.value;renderFuOut()}}
+    box.appendChild(g)});
+  const old=$("fu-copt"),focused=old&&document.activeElement===old;
+  $("fu-params").replaceChildren(box);if(focused&&$("fu-copt"))$("fu-copt").focus();
+  $("fu-tasks").replaceChildren(...FU_TASKS.map(x=>chip(x.name,FS.task===x.id,()=>{FS.task=x.id;renderFu();if(x.id==="custom")$("fu-custom").focus()})));
+  $("fu-custom-wrap").hidden=FS.task!=="custom";
+  $("fu-id").textContent=`技巧 ${String(idx+1).padStart(2,"0")}｜${tc.name}`;
+  renderFuOut();
+}
+function renderFuOut(){
+  const tc=fuTech(),nx=FU_TECHS.find(x=>x.id===tc.next);
+  $("fu-prompt").innerHTML=fuText(true);
+  $("fb-lbl").textContent=`${tc.name}｜${fuTask().name}`;
+  $("fu-why").textContent=tc.why;$("fu-when").textContent=tc.when;$("fu-expect").textContent=tc.expect;
+  $("fu-next-txt").textContent=`AI 回答後，可以再用「${nx.name}」從另一個角度追問。`;
+  $("fu-next").textContent=`換成「${nx.name}」`;$("fu-next").onclick=()=>{FS.tech=nx.id;renderFu();$("fu-result").scrollIntoView({block:"start",behavior:"smooth"})};
+}
+$("fb-go").onclick=()=>$("fu-result").scrollIntoView({behavior:"smooth",block:"start"});
+if("IntersectionObserver" in window){
+  new IntersectionObserver(es=>es.forEach(e=>$("fbar").classList.toggle("away",e.isIntersecting)),{rootMargin:"0px 0px -50% 0px"}).observe($("fu-result"));
+}
+$("fu-custom").oninput=e=>{FS.custom=e.target.value;renderFuOut()};
+$("fu-copy").onclick=async()=>{const b=$("fu-copy");await copy(fuText(false),b)};
+function showApp(v){
+  const fu=v==="fu";
+  $("app-gen").setAttribute("aria-selected",!fu);$("app-fu").setAttribute("aria-selected",fu);
+  $("view-gen").hidden=fu;$("view-fu").hidden=!fu;document.body.classList.toggle("fu-on",fu);
+  try{history.replaceState(null,"",fu?"#followup":"#")}catch(e){}
+}
+$("app-gen").onclick=()=>showApp("gen");$("app-fu").onclick=()=>showApp("fu");
+$("fu-to-gen").onclick=()=>{showApp("gen");window.scrollTo({top:0})};
+renderFu();
+if(location.hash==="#followup")showApp("fu");
 </script>
 </body>
 </html>
