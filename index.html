@@ -238,6 +238,8 @@ button,input,textarea{-webkit-tap-highlight-color:transparent;touch-action:manip
 .fu-detail .cite{font-size:11.5px;color:var(--muted);margin-top:6px}
 .param{margin-top:4px}
 .param + .param{margin-top:14px}
+.param .grp{font-size:12px;color:var(--muted);margin:10px 0 6px}
+.param .grp:first-of-type{margin-top:0}
 .param .hint{font-size:12.5px;color:var(--muted);margin-top:6px}
 .fu-prompt{font-family:var(--f-mono);font-size:15px;line-height:1.85;white-space:pre-wrap;word-break:break-word;margin:0;padding:14px 16px;background:var(--panel);border:1px solid var(--slip-line);border-radius:8px}
 .fu-prompt .var{background:var(--ph);border-radius:3px;padding:0 3px}
@@ -1148,9 +1150,9 @@ const FU_TECHS=[
   params:[{k:"aud",label:"台下坐的是誰",opts:["董事會成員","剛報到的財務新人","業務部門主管","法說會的投資人"]},{k:"len",label:"報告時間",opts:["3 分鐘","10 分鐘"]}],
   build:(p,t)=>`用你在滿場${V(p.aud)}面前上台報告的方式，花 ${V(p.len)}解釋${V(t.topic)}的重點。`,next:"metaphor"},
  {id:"metaphor",name:"轉換領域作比喻",hook:"給它一個怪限制",ex:"只能用廚房比喻解釋這個概念。",
-  why:"它會被迫想一些更有創意的連結，反而更容易講到點上。限制可以隨便換：運動、電影、自然界、寵物都能用。",
+  why:"它會被迫想一些更有創意的連結，反而更容易講到點上。限制可以隨便換：運動、電影、自然界、寵物都能用，換成社會學、心理學、量子力學這類學科，還能逼出不同的觀點。",
   when:"要向非財務同仁或主管解釋專業概念，或自己也還沒真正搞懂時。",expect:"用一個完整的比喻對應每個專業名詞，最後再拉回原本的概念。",
-  params:[{k:"domain",label:"只能用什麼比喻",opts:["廚房","運動","電影","自然界","寵物","自訂"],custom:"例：搭捷運、養盆栽"}],
+  params:[{k:"domain",label:"只能用什麼比喻",groups:[{label:"生活情境",opts:["廚房","運動","電影","自然界","寵物"]},{label:"學科領域",opts:["社會學","心理學","量子力學","經濟學","生物學","化學","天文學","歷史學","哲學","醫學"]},{label:"其他",opts:["自訂"]}],custom:"例：搭捷運、養盆栽、熱力學"}],
   build:(p,t)=>`只能用${V(p.domain)}比喻，解釋${V(t.concept)}。`,next:"stage"},
  {id:"bet",name:"跟他打賭更嚴謹",hook:"跟它說：「我們賭 100 美金」",ex:"我們賭 100 美金：這段 code 到底有沒有寫得有效率？",
   why:"一有「賭注」它就會突然更龜毛、更嚴謹：開始補假設、抓邊界案例、自己先反覆檢查、加一堆風險說明。想像中的錢等於真實的細節控。",
@@ -1171,7 +1173,7 @@ function fuTask(){
   return {name:"自訂主題",topic:tp,concept:tp,role:"資深財務專家",wrong:[`很明顯${tp}照現在的做法就沒問題了，對吧？`,`很明顯${tp}不需要考慮例外情況，對吧？`],objection:"這個做法忽略了一些重要的前提"};
 }
 const fuTech=()=>FU_TECHS.find(x=>x.id===FS.tech);
-const fuOpts=(pr,t)=>typeof pr.opts==="function"?pr.opts(t):pr.opts;
+const fuOpts=(pr,t)=>pr.groups?pr.groups.flatMap(g=>g.opts):typeof pr.opts==="function"?pr.opts(t):pr.opts;
 function fuParams(){
   const tc=fuTech(),t=fuTask(),cur=FS.p[tc.id]||(FS.p[tc.id]={}),out={};
   tc.params.forEach(pr=>{const o=fuOpts(pr,t);let i=cur[pr.k]??(pr.k==="iq"?1:0);if(i>=o.length)i=0;cur[pr.k]=i;
@@ -1191,8 +1193,11 @@ function renderFu(){
   const cur=FS.p[tc.id]||(FS.p[tc.id]={});fuParams();
   const box=document.createElement("div");
   tc.params.forEach(pr=>{const o=fuOpts(pr,t);const g=document.createElement("div");g.className="param";
-    g.innerHTML=`<div class="sub" style="margin-top:0">${pr.label}</div>`;const ch=document.createElement("div");ch.className="chips";
-    o.forEach((v,i)=>ch.appendChild(chip(v,cur[pr.k]===i,()=>{cur[pr.k]=i;renderFu();if(pr.custom&&v==="自訂")$("fu-copt").focus()})));g.appendChild(ch);
+    g.innerHTML=`<div class="sub" style="margin-top:0">${pr.label}</div>`;
+    const mk=(v,i)=>chip(v,cur[pr.k]===i,()=>{cur[pr.k]=i;renderFu();if(pr.custom&&v==="自訂")$("fu-copt").focus()});
+    if(pr.groups){let off=0;pr.groups.forEach(gr=>{const h=document.createElement("div");h.className="grp";h.textContent=gr.label;g.appendChild(h);
+      const ch=document.createElement("div");ch.className="chips";gr.opts.forEach((v,j)=>ch.appendChild(mk(v,off+j)));off+=gr.opts.length;g.appendChild(ch)})}
+    else{const ch=document.createElement("div");ch.className="chips";o.forEach((v,i)=>ch.appendChild(mk(v,i)));g.appendChild(ch)}
     if(pr.hints){const h=document.createElement("div");h.className="hint";h.textContent=pr.hints[cur[pr.k]];g.appendChild(h)}
     if(pr.custom&&o[cur[pr.k]]==="自訂"){const f=document.createElement("div");f.className="field";f.style.marginTop="10px";
       f.innerHTML=`<label for="fu-copt">自訂比喻領域</label><input id="fu-copt" placeholder="${pr.custom}">`;g.appendChild(f);
