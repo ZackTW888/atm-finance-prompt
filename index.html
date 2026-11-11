@@ -249,6 +249,13 @@ button,input,textarea{-webkit-tap-highlight-color:transparent;touch-action:manip
 .fu-flow{display:flex;gap:6px;padding:10px 18px;border-bottom:1px dashed var(--slip-line);flex-wrap:wrap}
 .fu-flow span{font-size:12px;padding:3px 10px;border-radius:999px;background:var(--bg);color:var(--muted)}
 .fu-flow span.on{background:var(--brand-soft);color:var(--ink)}
+.models{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;margin-top:10px}
+.model{border:1px solid var(--slip-line);border-radius:8px;background:var(--panel);padding:10px 12px;min-width:0}
+.model h4{margin:0;font-size:14px;font-family:var(--f-body);display:flex;align-items:center;gap:6px}
+.model h4 i{width:8px;height:8px;border-radius:50%;display:inline-block}
+.model .tone{font-size:12px;color:var(--muted);margin:2px 0 6px}
+.model p{font-size:13.5px;margin:0}
+.mnote{font-size:12px!important;color:var(--muted);margin-top:8px!important}
 .next-btn{background:var(--panel);border:1.5px solid var(--brand);color:var(--ink);border-radius:8px;padding:6px 12px;cursor:pointer;font-size:13.5px;margin-top:6px}
 @media (max-width:720px){
   .apptabs button{padding:9px 11px;font-size:15px}
@@ -410,7 +417,9 @@ button,input,textarea{-webkit-tap-highlight-color:transparent;touch-action:manip
             </div>
             <div class="fu-sec"><h3>為什麼有效</h3><p id="fu-why"></p></div>
             <div class="fu-sec"><h3>適合什麼時候用</h3><p id="fu-when"></p></div>
-            <div class="fu-sec"><h3>AI 可能會怎麼回</h3><p id="fu-expect"></p></div>
+            <div class="fu-sec"><h3>AI 可能會怎麼回</h3><p id="fu-expect"></p>
+              <div class="models" id="fu-models"></div>
+              <p class="mnote">以上是一般使用時常見的回應傾向，實際表現會因版本、設定與對話內容而不同。最好的練習是把同一句追問貼到三個工具，自己比較看看。</p></div>
             <div class="fu-sec"><h3>下一招可以接著用</h3><p id="fu-next-txt"></p><button class="next-btn" type="button" id="fu-next"></button></div>
           </div>
         </div>
@@ -1129,42 +1138,43 @@ const FU_TASKS=[
  {id:"custom",name:"自訂主題"}
 ];
 const FU_TECHS=[
- {id:"memory",name:"暗示 AI 有講過",hook:"直接跟 AI 說：「你昨天有講過」",ex:"你昨天跟我講過 React hooks，但我忘記你怎麼講 useEffect 那段了。",
+ {id:"memory",models:["多半會先說明看不到之前的對話（除非開了記憶功能），接著直接重講，通常整理成編號步驟。","會說明無法讀取先前對話，再用分段標題重新整理，常附一張對照表。","通常先坦白說沒有昨天的對話紀錄，再把你點名的那段完整重講，並指出哪些地方需要你的資料。"],name:"暗示 AI 有講過",hook:"直接跟 AI 說：「你昨天有講過」",ex:"你昨天跟我講過 React hooks，但我忘記你怎麼講 useEffect 那段了。",
   why:"AI 會突然變得很認真，像是要對齊它「昨天」講過的內容、怕自己前後矛盾，所以講得更細、更深。就算是新對話也有效。",
   when:"覺得回答太淺、只講概念，想請它把某一段拆細時。",expect:"從頭重新鋪陳，把你點名的那一段講得更完整，通常會補上步驟與例子。",
   params:[{k:"part",label:"想請它補講哪一段",opts:["計算步驟","判斷標準","常見錯誤","怎麼向主管解釋"]},{k:"ask",label:"最後再加一句",opts:["請再完整講一次","請用我們公司的數字重新示範一次"]}],
   build:(p,t)=>`你昨天跟我講過${V(t.concept)}，但我忘記你怎麼講${V(p.part)}那段了。${V(p.ask)}。`,next:"iq"},
- {id:"iq",name:"讓 AI 變高智商",hook:"給它亂設一個 IQ",ex:"你是 IQ 145 的行銷高手，幫我分析這個活動。",
+ {id:"iq",models:["語氣變得更有自信，加上框架名稱和分層標題，結尾常主動提供下一步選項。","常改成多層次架構並搭配表格，有時會補充產業趨勢或外部觀點。","通常不太回應 IQ 設定本身，而是把分析寫得更有條理，並明確標出前提與限制。"],name:"讓 AI 變高智商",hook:"給它亂設一個 IQ",ex:"你是 IQ 145 的行銷高手，幫我分析這個活動。",
   why:"回答會整個升級：更有架構、更像專家在講話。數字調一下，品質也會跟著變。",
   when:"第一版回答太平、像網路文章，想要更有架構的專業分析時。",expect:"用分層架構重寫，加入專業框架與判斷依據，語氣更像資深顧問。",
   params:[{k:"iq",label:"設定 IQ",opts:["130","145","160"],hints:["130：還行，架構稍微清楚一點","145：最常用，更有架構、更像專家","160：會開始講你沒聽過的原則，記得查證"]},{k:"role",label:"扮演的角色",opts:t=>[...new Set([t.role,"財務長","會計師事務所合夥人","企業併購顧問"])]}],
   build:(p,t)=>`你是 IQ ${V(p.iq)} 的${V(p.role)}，幫我重新分析剛才的${V(t.topic)}。`,next:"memory"},
- {id:"liar",name:"故意講假話模式",hook:"用「很明顯…對吧？」來釣它反駁你",ex:"很明顯 Python 比 JavaScript 更適合做 web app，對吧？",
+ {id:"liar",models:["常先說「不完全是」，再條列例外；語氣偏溫和，有時會先肯定你說對的部分。","會直接說明這個說法的誤區，並用表格比較不同情況下的結果。","通常會明確指出說法不正確並解釋原因，再補上實務例外，比較不會為了附和你而讓步。"],name:"故意講假話模式",hook:"用「很明顯…對吧？」來釣它反駁你",ex:"很明顯 Python 比 JavaScript 更適合做 web app，對吧？",
   why:"AI 反而不會無腦附和，會開始糾正你、補細節、講例外情況，等於把它的唱反調模式逼出來。",
   when:"懷疑 AI 一直順著你講，想確認某個常見觀念有沒有例外時。",expect:"先指出這個說法不完全對，再列出條件、反例與實務上的例外。",
   params:[{k:"claim",label:"選一個「故意講錯」的說法",opts:t=>t.wrong},{k:"add",label:"要不要多加一句",opts:["只問這一句","再請它列出例外情況"]}],
   build:(p,t)=>V(p.claim)+(p.add==="再請它列出例外情況"?"如果有例外情況，也請一併列出來。":""),next:"bet"},
- {id:"stage",name:"模擬群體演講",hook:"假裝你要上台演講，有觀眾在聽",ex:"用你在滿場觀眾前講課的方式，解釋區塊鏈。",
+ {id:"stage",models:["會寫出完整講稿，含開場白、重點和結語，常加上講者提示或停頓建議。","傾向整理成簡報大綱，一頁一個重點，可能建議搭配的圖表。","偏向自然口語的講稿，段落之間有轉折，並預先回答聽眾可能提出的問題。"],name:"模擬群體演講",hook:"假裝你要上台演講，有觀眾在聽",ex:"用你在滿場觀眾前講課的方式，解釋區塊鏈。",
   why:"回覆的寫法會直接換一套：更有節奏、更會鋪陳、會舉例，還會先回答大家可能會問的問題。比只叫它「講清楚一點」好太多。",
   when:"要把分析結果報告給別人聽，或回答太像條列筆記、讀起來沒有重點時。",expect:"改成有開場、重點與結論的講稿，並預先回答聽眾可能提出的問題。",
   params:[{k:"aud",label:"台下坐的是誰",opts:["董事會成員","剛報到的財務新人","業務部門主管","法說會的投資人"]},{k:"len",label:"報告時間",opts:["3 分鐘","10 分鐘"]}],
   build:(p,t)=>`用你在滿場${V(p.aud)}面前上台報告的方式，花 ${V(p.len)}解釋${V(t.topic)}的重點。`,next:"metaphor"},
- {id:"metaphor",name:"轉換領域作比喻",hook:"給它一個怪限制",ex:"只能用廚房比喻解釋這個概念。",
+ {id:"metaphor",models:["比喻生動，常搭配小標題或表情符號，對應關係多半做成條列。","常用對照表把比喻裡的元素和財務名詞一一對應。","會把比喻延伸成一個完整的故事，最後提醒這個比喻在哪些地方不成立。"],name:"轉換領域作比喻",hook:"給它一個怪限制",ex:"只能用廚房比喻解釋這個概念。",
   why:"它會被迫想一些更有創意的連結，反而更容易講到點上。限制可以隨便換：運動、電影、自然界、寵物都能用，換成社會學、心理學、量子力學這類學科，還能逼出不同的觀點。",
   when:"要向非財務同仁或主管解釋專業概念，或自己也還沒真正搞懂時。",expect:"用一個完整的比喻對應每個專業名詞，最後再拉回原本的概念。",
   params:[{k:"domain",label:"只能用什麼比喻",groups:[{label:"生活情境",opts:["廚房","運動","電影","自然界","寵物"]},{label:"學科領域",opts:["社會學","心理學","量子力學","經濟學","生物學","化學","天文學","歷史學","哲學","醫學"]},{label:"其他",opts:["自訂"]}],custom:"例：搭捷運、養盆栽、熱力學"}],
   build:(p,t)=>`只能用${V(p.domain)}比喻，解釋${V(t.concept)}。`,next:"stage"},
- {id:"bet",name:"跟他打賭更嚴謹",hook:"跟它說：「我們賭 100 美金」",ex:"我們賭 100 美金：這段 code 到底有沒有寫得有效率？",
+ {id:"bet",models:["常半開玩笑接下賭注，再逐項重新檢查並給出結論。","會列出檢查清單逐項確認，並指出需要你再提供哪些資料。","通常不太在意賭注，直接逐步重算，老實說出沒把握的地方，必要時承認先前有錯。"],name:"跟他打賭更嚴謹",hook:"跟它說：「我們賭 100 美金」",ex:"我們賭 100 美金：這段 code 到底有沒有寫得有效率？",
   why:"一有「賭注」它就會突然更龜毛、更嚴謹：開始補假設、抓邊界案例、自己先反覆檢查、加一堆風險說明。想像中的錢等於真實的細節控。",
   when:"回答裡有數字、計算或結論，需要它自己再檢查一遍時。",expect:"逐項重新驗算，列出原本沒說的假設、邊界情況與風險，必要時修正答案。",
   params:[{k:"stake",label:"賭注",opts:["100 美金","1,000 美金","一個月的午餐"]},{k:"check",label:"賭什麼",opts:["數字到底有沒有算對","到底有沒有漏掉重要的風險","結論到底站不站得住腳"]}],
   build:(p,t)=>`我們賭 ${V(p.stake)}：你剛才的${V(t.topic)}，${V(p.check)}？`,next:"debate"},
- {id:"debate",name:"引發辯論或修正",hook:"直接搬出「有人不同意你」",ex:"我同事說你這方法錯了。你要嘛替自己辯護，要嘛承認他是對的。",
+ {id:"debate",models:["常先肯定同事的觀點有道理，再分點說明同意與不同意之處，比較容易讓步。","會用正反對照表整理雙方論點，最後給出折衷建議。","會認真評估反對意見：對方有理就明確修正，沒道理也會說清楚為什麼維持原做法。"],name:"引發辯論或修正",hook:"直接搬出「有人不同意你」",ex:"我同事說你這方法錯了。你要嘛替自己辯護，要嘛承認他是對的。",
   why:"這招會逼它真的去評估，而不是只講一堆概念。它會要嘛辯到很完整，要嘛開始承認哪裡有漏洞、哪裡要改前提。",
   when:"準備把結論交出去之前，想先讓它自我檢討、找出弱點時。",expect:"逐點回應反對意見，說明哪些地方站得住、哪些前提需要修正，並給出修正版。",
   params:[{k:"who",label:"誰不同意",opts:["我同事","我們的簽證會計師","財務長","稽核主管"]},{k:"reason",label:"要不要附上反對理由",opts:["不附理由","附上反對理由"]}],
   build:(p,t)=>`${V(p.who)}說你這方法錯了${p.reason==="附上反對理由"?`，他認為${V(t.objection)}`:""}。你要嘛替自己辯護，要嘛承認他是對的。`,next:"liar"}
 ];
+const MODELS=[{name:"ChatGPT",c:"var(--ok)",tone:"整體：標題加條列、語氣積極，常主動提供延伸選項"},{name:"Gemini",c:"#4f7fd1",tone:"整體：愛用表格與分段重點，常補充相關背景資訊"},{name:"Claude",c:"var(--brand)",tone:"整體：偏段落敘述、語氣審慎，較常說明假設與限制"}];
 const FS={tech:"liar",task:"bva",custom:"",p:{},customOpt:""};
 function fuTask(){
   const t=FU_TASKS.find(x=>x.id===FS.task);
@@ -1214,7 +1224,8 @@ function renderFuOut(){
   const tc=fuTech(),nx=FU_TECHS.find(x=>x.id===tc.next);
   $("fu-prompt").innerHTML=fuText(true);
   $("fb-lbl").textContent=`${tc.name}｜${fuTask().name}`;
-  $("fu-why").textContent=tc.why;$("fu-when").textContent=tc.when;$("fu-expect").textContent=tc.expect;
+  $("fu-why").textContent=tc.why;$("fu-when").textContent=tc.when;$("fu-expect").textContent="共同點："+tc.expect;
+  $("fu-models").innerHTML=MODELS.map((m,i)=>`<div class="model"><h4><i style="background:${m.c}"></i>${m.name}</h4><div class="tone">${m.tone}</div><p>${esc(tc.models[i])}</p></div>`).join("");
   $("fu-next-txt").textContent=`AI 回答後，可以再用「${nx.name}」從另一個角度追問。`;
   $("fu-next").textContent=`換成「${nx.name}」`;$("fu-next").onclick=()=>{FS.tech=nx.id;renderFu();$("fu-result").scrollIntoView({block:"start",behavior:"smooth"})};
 }
