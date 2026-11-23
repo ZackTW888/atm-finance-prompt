@@ -18,6 +18,7 @@
   --m:#8d6aa6; --m-soft:#efe8f4;
   --slip:#fdfcf8; --slip-line:#d9d3c5;
   --ok:#3f7d55; --brand-soft:#f1ebe0; --ph:#efe4d0; --ap:#dcefe2;
+  --g:#3f7d55; --g-soft:#e4f1e8; --y:#a7801a; --y-soft:#f8efd3; --r:#b4473c; --r-soft:#f7e4e1;
   --f-display:"Noto Serif TC","Songti TC","PMingLiU",serif;
   --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
   --f-mono:"IBM Plex Mono","Noto Sans TC",ui-monospace,monospace;
@@ -26,12 +27,12 @@
   --bg:#191816; --panel:#22201d; --ink:#ece8e0; --muted:#a59f93; --line:#38352f;
   --brand:#c9ab7c; --brand-ink:#1b1915;
   --a:#dc9b8f; --a-soft:#3a2724; --t:#cbc26a; --t-soft:#33311d; --m:#c09ddb; --m-soft:#2f2638;
-  --slip:#1f1e1b; --slip-line:#45413a; --ok:#7cc495; --brand-soft:#2e2921; --ph:#3d3426; --ap:#22382b; color-scheme:dark}}
+  --slip:#1f1e1b; --slip-line:#45413a; --ok:#7cc495; --brand-soft:#2e2921; --ph:#3d3426; --ap:#22382b; --g:#7cc495; --g-soft:#1f3527; --y:#e0bd5a; --y-soft:#3a321b; --r:#e8897e; --r-soft:#3d2421; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#191816; --panel:#22201d; --ink:#ece8e0; --muted:#a59f93; --line:#38352f;
   --brand:#c9ab7c; --brand-ink:#1b1915;
   --a:#dc9b8f; --a-soft:#3a2724; --t:#cbc26a; --t-soft:#33311d; --m:#c09ddb; --m-soft:#2f2638;
-  --slip:#1f1e1b; --slip-line:#45413a; --ok:#7cc495; --brand-soft:#2e2921; --ph:#3d3426; --ap:#22382b; color-scheme:dark}
+  --slip:#1f1e1b; --slip-line:#45413a; --ok:#7cc495; --brand-soft:#2e2921; --ph:#3d3426; --ap:#22382b; --g:#7cc495; --g-soft:#1f3527; --y:#e0bd5a; --y-soft:#3a321b; --r:#e8897e; --r-soft:#3d2421; color-scheme:dark}
 
 *{box-sizing:border-box}
 body{margin:0}
@@ -214,11 +215,11 @@ button,input,textarea{-webkit-tap-highlight-color:transparent;touch-action:manip
 }
 @media (hover:none){.chip:hover,.scen button:hover{border-color:var(--line)}}
 /* App tabs: 指令產生器 / 追問技巧練習 */
-.apptabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:18px}
+.apptabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:18px}
 .apptabs button{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;cursor:pointer;background:var(--panel);border:1.5px solid var(--line);border-radius:12px;padding:10px 14px;font-size:16px;font-weight:700;font-family:var(--f-display);min-width:0}
 .apptabs button small{font-family:var(--f-body);font-weight:400;font-size:12.5px;color:var(--muted)}
 .apptabs button[aria-selected="true"]{border-color:var(--brand);background:var(--brand-soft);box-shadow:inset 0 -3px 0 var(--brand)}
-.fu-on #mbar,body:not(.fu-on) #fbar{display:none!important}
+body:not([data-view="gen"]) #mbar,body:not([data-view="fu"]) #fbar,body:not([data-view="sec"]) #sbar{display:none!important}
 .homework{margin-top:22px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 18px;align-items:start}
 .homework h2{font-size:17px;font-weight:600;grid-column:1/-1}
 .homework ol{margin:0;padding-left:22px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 28px;grid-column:1/-1;font-size:14.5px}
@@ -266,10 +267,100 @@ button,input,textarea{-webkit-tap-highlight-color:transparent;touch-action:manip
   .fu-flow{padding:10px 14px}
 }
 @media (max-width:360px){.fu-techs{grid-template-columns:minmax(0,1fr)}.apptabs button small{display:none}}
+/* 資安紅綠燈 */
+.sec-pillars{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:22px}
+.pillar{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px;min-width:0}
+.pillar .pn{font-family:var(--f-mono);font-size:12px;color:var(--brand);font-weight:500}
+.pillar h3{font-size:16.5px;font-weight:600;margin:2px 0 8px}
+.pillar dl{margin:0;display:grid;gap:8px}
+.pillar dt{font-weight:700;font-size:14px}
+.pillar dd{margin:0;font-size:13.5px;color:var(--muted)}
+.motto{margin:14px 0 0;text-align:center;font-family:var(--f-display);font-weight:600;font-size:17px;color:var(--brand)}
+.lights{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.light{border-radius:12px;padding:12px 14px;border:1.5px solid;min-width:0}
+.light h3{font-size:15.5px;display:flex;align-items:center;gap:8px;margin:0 0 4px;font-family:var(--f-body);font-weight:700}
+.light h3 i,.lamp{width:14px;height:14px;border-radius:50%;display:inline-block;flex:none}
+.light .act{font-size:13px;font-weight:500;margin-bottom:6px}
+.light ul{margin:0;padding-left:18px;font-size:13px;line-height:1.6}
+.light.g{border-color:var(--g);background:var(--g-soft)} .light.g h3 i,.lamp.g{background:var(--g)}
+.light.y{border-color:var(--y);background:var(--y-soft)} .light.y h3 i,.lamp.y{background:var(--y)}
+.light.r{border-color:var(--r);background:var(--r-soft)} .light.r h3 i,.lamp.r{background:var(--r)}
+.qflow{display:flex;flex-direction:column;gap:8px;margin-top:4px}
+.q{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg)}
+.q[data-off]{opacity:.45}
+.q .qn{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+.q .qt{font-size:14.5px;font-weight:500}
+.q .qt small{display:block;font-weight:400;font-size:12px;color:var(--muted)}
+.yn{display:flex;gap:6px}
+.yn button{border:1.5px solid var(--line);background:var(--panel);border-radius:8px;padding:6px 12px;cursor:pointer;font-size:14px;min-width:48px}
+.yn button[aria-pressed="true"]{border-color:var(--ink);background:var(--ink);color:var(--bg)}
+.verdict{margin-top:10px;border-radius:10px;padding:12px 14px;border:1.5px solid var(--line);background:var(--panel);font-size:14px}
+.verdict b{display:flex;align-items:center;gap:8px;font-size:15.5px}
+.verdict p{margin:4px 0 0;color:var(--muted)}
+.verdict.g{border-color:var(--g);background:var(--g-soft)} .verdict.y{border-color:var(--y);background:var(--y-soft)} .verdict.r{border-color:var(--r);background:var(--r-soft)}
+.qz-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px;font-size:13.5px;color:var(--muted)}
+.qz-head b{font-family:var(--f-mono);color:var(--ink);font-size:15px}
+.qz{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.qz li{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--panel)}
+.qz .row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center}
+.qz .it{font-size:14.5px}
+.qz .it small{display:block;font-size:12px;color:var(--muted)}
+.pick{display:flex;gap:6px}
+.pick button{width:40px;height:40px;border-radius:50%;border:2px solid var(--line);background:var(--bg);cursor:pointer;display:grid;place-items:center;padding:0;font-size:13px;font-weight:700;color:var(--muted)}
+.pick button.g{border-color:var(--g);color:var(--g)} .pick button.y{border-color:var(--y);color:var(--y)} .pick button.r{border-color:var(--r);color:var(--r)}
+.pick button[aria-pressed="true"].g{background:var(--g);color:var(--panel)}
+.pick button[aria-pressed="true"].y{background:var(--y);color:var(--panel)}
+.pick button[aria-pressed="true"].r{background:var(--r);color:var(--panel)}
+.qz .fb{margin-top:8px;font-size:13.5px;padding:8px 10px;border-radius:8px;background:var(--bg)}
+.qz .fb .ok{color:var(--ok);font-weight:700} .qz .fb .ng{color:var(--r);font-weight:700}
+.qz .fb .safe{display:block;margin-top:4px;font-family:var(--f-mono);font-size:12.5px}
+.cl{margin-top:4px}
+.cl h4{font-size:13px;letter-spacing:.06em;color:var(--muted);margin:14px 0 6px;font-family:var(--f-body)}
+.cl h4:first-child{margin-top:0}
+.cl label{display:flex;gap:10px;align-items:flex-start;padding:7px 4px;font-size:14px;cursor:pointer;border-bottom:1px dashed var(--line)}
+.cl label input{margin-top:4px;width:17px;height:17px;flex:none;accent-color:var(--brand)}
+.cl label small{display:block;font-size:12px;color:var(--muted)}
+.cl label:has(input:checked) span{color:var(--muted)}
+.prog{height:8px;background:var(--bg);border-radius:999px;overflow:hidden;margin:4px 0 12px}
+.prog i{display:block;height:100%;background:var(--brand);width:0;transition:width .2s}
+.sec-work .result{position:static}
+.dz-mode{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:12px}
+.dz-mode button{text-align:left;border:1.5px solid var(--slip-line);background:var(--panel);border-radius:10px;padding:8px 12px;cursor:pointer;line-height:1.4}
+.dz-mode button strong{display:block;font-size:14px}
+.dz-mode button span{font-size:12px;color:var(--muted)}
+.dz-mode button[aria-pressed="true"]{border-color:var(--brand);background:var(--brand-soft)}
+.dz-lbl{font-size:12.5px;color:var(--muted);margin:12px 0 6px;display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap}
+.dz textarea,.dz input{font:inherit;font-size:14px;color:var(--ink);background:var(--panel);border:1px solid var(--slip-line);border-radius:8px;padding:8px 10px;width:100%}
+.dz textarea{font-family:var(--f-mono);font-size:13px;line-height:1.7;min-height:150px;resize:vertical}
+.dz .grid2{margin-top:8px}
+.dz .chips{gap:6px}
+.dz .chip{font-size:13px;padding:4px 11px}
+.dz .chip b{font-family:var(--f-mono);font-weight:500;margin-left:4px}
+.dz .chip[aria-pressed="true"]{background:var(--brand-soft);border-color:var(--brand)}
+.dz .chip[aria-pressed="false"]{color:var(--muted);text-decoration:line-through}
+.dz-out{font-family:var(--f-mono);font-size:13px;line-height:1.8;white-space:pre-wrap;word-break:break-word;margin:0;padding:10px 12px;background:var(--panel);border:1px solid var(--slip-line);border-radius:8px;min-height:80px}
+.dz-out mark{background:var(--y-soft);color:inherit;border-bottom:1.5px solid var(--y);border-radius:2px;padding:0 1px}
+.maptbl{width:100%;border-collapse:collapse;font-size:13px}
+.maptbl th,.maptbl td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--slip-line);word-break:break-all}
+.maptbl th{font-size:12px;color:var(--muted);font-weight:500}
+.maptbl td:first-child{font-family:var(--f-mono);white-space:nowrap;word-break:normal}
+.warnbox{margin-top:8px;font-size:12.5px;padding:8px 10px;border-radius:8px;background:var(--r-soft);color:var(--ink);border-left:3px solid var(--r)}
+.local{display:inline-flex;gap:6px;align-items:center;font-size:12px;padding:2px 10px;border-radius:999px;background:var(--g-soft);color:var(--ink);border:1px solid var(--g)}
+.linkbtn{background:none;border:0;padding:0;color:var(--brand);text-decoration:underline;cursor:pointer;font-size:inherit;font-weight:700}
+@media (max-width:900px){.sec-pillars{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:720px){
+  .lights{grid-template-columns:minmax(0,1fr)}
+  .pillar{padding:14px}
+  .q{grid-template-columns:auto minmax(0,1fr);}
+  .q .yn{grid-column:2}
+  .qz .row{grid-template-columns:minmax(0,1fr)}
+  .dz textarea,.dz input{font-size:16px}
+  .dz-mode{grid-template-columns:minmax(0,1fr)}
+}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
-<body>
+<body data-view="gen">
 
 <div class="wrap">
   <header class="top">
@@ -288,6 +379,7 @@ button,input,textarea{-webkit-tap-highlight-color:transparent;touch-action:manip
   <nav class="apptabs" role="tablist" aria-label="網站功能">
     <button type="button" role="tab" id="app-gen" aria-selected="true" aria-controls="view-gen">指令產生器<small>用 ATM 組出第一版指令</small></button>
     <button type="button" role="tab" id="app-fu" aria-selected="false" aria-controls="view-fu">追問技巧練習<small>拿到回答後，怎麼繼續問</small></button>
+    <button type="button" role="tab" id="app-sec" aria-selected="false" aria-controls="view-sec">資安紅綠燈<small>上傳 AI 前先分級、去識別化</small></button>
   </nav>
 
   <div class="work" id="view-gen" role="tabpanel" aria-labelledby="app-gen">
@@ -373,7 +465,7 @@ button,input,textarea{-webkit-tap-highlight-color:transparent;touch-action:manip
           <ul class="list" id="needs"></ul>
         </div>
       </div>
-      <div class="safety"><b>使用前提醒：</b>不要貼上客戶個資、身分證字號、帳號或尚未公開的財報數字；請先改成代號或去識別化。AI 可能算錯或引用過時法規，所有數字與法條都要由你最後核對。</div>
+      <div class="safety"><b>使用前提醒：</b>不要貼上客戶個資、身分證字號、帳號或尚未公開的財報數字；請先改成代號或<button class="linkbtn" type="button" data-go="sec">去識別化</button>。AI 可能算錯或引用過時法規，所有數字與法條都要由你最後核對。</div>
     </aside>
   </div>
 
@@ -383,7 +475,7 @@ button,input,textarea{-webkit-tap-highlight-color:transparent;touch-action:manip
       <ol>
         <li>從指令產生器選出<em>較有感</em>的指令，先問出第一版回答</li>
         <li>適時提供公司<em>背景</em>、業務<em>現狀</em>、輔助<em>資料</em></li>
-        <li>留意<em>機敏</em>、<em>個資</em>、<em>營業秘密</em>等勿上傳</li>
+        <li>留意<em>機敏</em>、<em>個資</em>、<em>營業秘密</em>等勿上傳（先用<button class="linkbtn" type="button" data-go="sec">資安紅綠燈</button>判斷）</li>
         <li>挑出回答<em>不滿意</em>、<em>不到位</em>的地方，用下面的技巧追問</li>
       </ol>
       <button class="btn ghost sm go" type="button" id="fu-to-gen">先到指令產生器拿第一版指令</button>
@@ -427,6 +519,81 @@ button,input,textarea{-webkit-tap-highlight-color:transparent;touch-action:manip
       </aside>
     </div>
   </section>
+  <section id="view-sec" role="tabpanel" aria-labelledby="app-sec" hidden>
+    <div class="sec-pillars">
+      <div class="pillar"><div class="pn">01</div><h3>杜絕假性去識別化與操作漏洞</h3><dl>
+        <dt>分頁與批量遺漏</dt><dd>只遮了第一個工作表或第一頁，其他分頁、隱藏欄列、篩選掉的資料、樞紐分析的原始明細還在。字體改白色、黑框蓋住但文字仍可選取，都不算去識別化。</dd>
+        <dt>慎防第三方服務洩密</dt><dd>免費線上 PDF 轉檔、OCR、「幫你去識別化」的網站，本身就會拿到原始檔案。</dd></dl></div>
+      <div class="pillar"><div class="pn">02</div><h3>端到端安全工作流</h3><dl>
+        <dt>純前端架構 Client-Side Processing</dt><dd>去識別化在自己的電腦或瀏覽器完成，原始資料不經過任何伺服器。下方的去識別化工具就是這樣運作。</dd>
+        <dt>關閉模型訓練與 MFA</dt><dd>在 AI 工具設定中關閉「用我的對話改善模型」，帳號啟用多重要素驗證（MFA），優先使用公司核准的企業版。</dd></dl></div>
+      <div class="pillar"><div class="pn">03</div><h3>去識別化與完全匿名化的殘餘風險</h3><dl>
+        <dt>依用途權衡遮蔽強度</dt><dd><b>部分保留</b>（王○○、100–500 萬元）保留可讀性，適合內部討論；<b>全部編碼遮蔽</b>（人員A、[金額-1]）最安全，回答後再用編碼表還原。</dd>
+        <dt>人類最終責任制</dt><dd>多個欄位組合起來仍可能反推出對象。要不要上傳、AI 產出是否正確，最後都由人判斷負責。</dd></dl></div>
+    </div>
+    <p class="motto">去識別化不是終點，而是更安全的起點。</p>
+
+    <div class="work sec-work">
+      <section class="builder" aria-label="資安判斷練習">
+        <div class="step s0">
+          <div class="step-head"><div class="badge">1</div><div><h2>資安紅綠燈：三個問題判斷</h2><p>上傳 AI 之前，先依序回答三個問題。</p></div></div>
+          <div class="lights">
+            <div class="light g"><h3><i></i>綠燈</h3><div class="act">可以直接使用</div><ul><li>已公告的年報、季報、重大訊息</li><li>會計準則、稅法條文與函釋</li><li>公開產業統計、教育訓練教材</li><li>不含名稱與實際數字的文字草稿</li></ul></div>
+            <div class="light y"><h3><i></i>黃燈</h3><div class="act">去識別化後再用</div><ul><li>客戶、供應商名稱改成客戶A</li><li>員工姓名改成職稱或代號</li><li>具體金額改成比例、指數或級距</li><li>應收明細改成帳齡區間與金額級距</li></ul></div>
+            <div class="light r"><h3><i></i>紅燈</h3><div class="act">不上傳原始資料</div><ul><li>未公開財報與重大資訊</li><li>報價底價、合約、併購對象</li><li>銀行帳號、網銀密碼、憑證印鑑</li><li>薪資、身分證、健康資料</li></ul></div>
+          </div>
+          <div class="sub">拿你手上的資料試判斷一次</div>
+          <div class="qflow" id="qflow"></div>
+          <div class="verdict" id="verdict" aria-live="polite"></div>
+        </div>
+        <div class="step s0">
+          <div class="step-head"><div class="badge">2</div><div><h2>分級練習：這份資料是什麼燈？</h2><p>財務部常見的 14 種資料，點燈號看看你判斷得對不對。</p></div></div>
+          <div class="qz-head"><span>答對 <b id="qz-score">0 / 0</b>，共 <span id="qz-total"></span> 題</span><button class="btn ghost sm" type="button" id="qz-reset">重新作答</button></div>
+          <ul class="qz" id="qz"></ul>
+        </div>
+        <div class="step s0">
+          <div class="step-head"><div class="badge">3</div><div><h2>上傳前檢查清單</h2><p>對照三大重點，逐項確認後再按送出。</p></div></div>
+          <div class="qz-head"><span>已確認 <b id="cl-n">0 / 12</b></span><button class="btn ghost sm" type="button" id="cl-reset">清除勾選</button></div>
+          <div class="prog" aria-hidden="true"><i id="cl-bar"></i></div>
+          <div class="cl" id="cl"></div>
+        </div>
+      </section>
+
+      <aside class="result" id="sec-result" aria-label="去識別化工具">
+        <div class="slip">
+          <div class="slip-top"><h2>去識別化工具</h2><small>只在你的瀏覽器處理</small></div>
+          <div class="pane dz">
+            <p class="intro"><span class="local">● 本機處理</span> 文字不會傳到任何伺服器。先用虛構範例練習，熟悉後再處理自己的資料。</p>
+            <div class="dz-mode" role="group" aria-label="遮蔽強度">
+              <button type="button" id="dz-full" aria-pressed="true"><strong>全部編碼遮蔽</strong><span>人員A、[金額-1]，最安全，可還原</span></button>
+              <button type="button" id="dz-part" aria-pressed="false"><strong>部分保留</strong><span>王○○、100–500 萬元，較好讀</span></button>
+            </div>
+            <div class="dz-lbl"><label for="dz-in">原始文字</label><span><button class="btn ghost sm" type="button" id="dz-sample">放入虛構範例</button> <button class="btn ghost sm" type="button" id="dz-clear">清空</button></span></div>
+            <textarea id="dz-in" spellcheck="false" placeholder="貼上要給 AI 的文字，例如一封催收信或一段費用說明"></textarea>
+            <div class="grid2">
+              <div class="field"><label for="dz-names">人名（用頓號或逗號分隔）</label><input id="dz-names" placeholder="王小明、陳美華"></div>
+              <div class="field"><label for="dz-kw">其他關鍵字（料號、專案代號、地址）</label><input id="dz-kw" placeholder="HX-2210、北區專案"></div>
+            </div>
+            <div class="dz-lbl">自動偵測到的項目（點一下可略過該類）</div>
+            <div class="chips" id="dz-types" role="group" aria-label="遮蔽類型"></div>
+            <div class="dz-lbl"><span>去識別化結果</span><button class="btn sm" type="button" id="dz-copy">複製結果</button></div>
+            <pre class="dz-out" id="dz-out"></pre>
+            <div class="warnbox" id="dz-warn">自動偵測抓不到所有東西：料號、單價、專案代號、地址、少見的人名，請自己加進上方欄位，並從頭到尾再讀一遍。</div>
+            <div id="dz-mapwrap">
+              <div class="dz-lbl">編碼表（只留在本機，不要上傳）</div>
+              <div style="overflow-x:auto"><table class="maptbl"><thead><tr><th>代號</th><th>原始內容</th><th>類型</th></tr></thead><tbody id="dz-map"></tbody></table></div>
+              <div class="dz-lbl"><label for="dz-ai">貼上 AI 的回答，換回原始名稱</label></div>
+              <textarea id="dz-ai" spellcheck="false" style="min-height:90px" placeholder="例：建議先寄提醒信給人員A，確認公司A的[金額-1]付款時程…"></textarea>
+              <div class="dz-lbl"><span>還原後</span><button class="btn ghost sm" type="button" id="dz-copy2">複製還原結果</button></div>
+              <pre class="dz-out" id="dz-back"></pre>
+            </div>
+            <p class="fake" id="dz-partnote" hidden>部分保留模式無法自動還原，請自行對照原文。需要還原時改用「全部編碼遮蔽」。</p>
+          </div>
+        </div>
+        <div class="safety"><b>提醒：</b>這個工具處理的是文字。Excel 或 PDF 請先在本機刪除隱藏工作表、註解與文件屬性，只複製需要的欄位進來。紅燈資料即使去識別化，也只描述問題，不貼原始內容。</div>
+      </aside>
+    </div>
+  </section>
 </div>
 
 <nav class="mbar" id="mbar" aria-label="指令完成度">
@@ -436,6 +603,10 @@ button,input,textarea{-webkit-tap-highlight-color:transparent;touch-action:manip
 <nav class="mbar" id="fbar" aria-label="目前的追問技巧">
   <div class="dots"><span class="lbl" id="fb-lbl"></span></div>
   <button class="btn" type="button" id="fb-go">查看追問指令</button>
+</nav>
+<nav class="mbar" id="sbar" aria-label="資安練習進度">
+  <div class="dots"><span class="lbl" id="sb-lbl"></span></div>
+  <button class="btn" type="button" id="sb-go">去識別化工具</button>
 </nav>
 
 <script>
@@ -1235,16 +1406,148 @@ if("IntersectionObserver" in window){
 }
 $("fu-custom").oninput=e=>{FS.custom=e.target.value;renderFuOut()};
 $("fu-copy").onclick=async()=>{const b=$("fu-copy");await copy(fuText(false),b)};
-function showApp(v){
-  const fu=v==="fu";
-  $("app-gen").setAttribute("aria-selected",!fu);$("app-fu").setAttribute("aria-selected",fu);
-  $("view-gen").hidden=fu;$("view-fu").hidden=!fu;document.body.classList.toggle("fu-on",fu);
-  try{history.replaceState(null,"",fu?"#followup":"#")}catch(e){}
+/* ===== 資安紅綠燈 ===== */
+const LIGHT={g:{n:"綠燈",act:"可以直接使用",tip:"公開或不具識別性的資料，可以直接貼給 AI。仍建議使用公司核准的工具。"},
+ y:{n:"黃燈",act:"去識別化後再用",tip:"把名稱換成代號、金額換成比例或級距，用右側的去識別化工具處理後再上傳。"},
+ r:{n:"紅燈",act:"不上傳原始資料",tip:"只用文字描述問題，例如「一家客戶逾期約兩個月，金額占應收一成」，不要貼原始檔案或數字。"}};
+const QS=[{t:"這是公開資料嗎？",s:"已公告、已發布、任何人都查得到",yes:"g",no:1},
+ {t:"外流會傷害公司或客戶嗎？",s:"商譽、競爭、法規、個資、內線交易",yes:2,no:"g"},
+ {t:"改成代號或比例後，還能完成任務嗎？",s:"AI 只需要結構和比例，不需要真名真數",yes:"y",no:"r"}];
+const QV={};
+function renderQ(){
+  let cur=0,res=null;const path=[];
+  while(cur!==null&&res===null){path.push(cur);const a=QV[cur];if(a===undefined)break;const nx=a?QS[cur].yes:QS[cur].no;if(typeof nx==="string")res=nx;else cur=nx}
+  $("qflow").innerHTML=QS.map((q,i)=>{const on=path.includes(i);return `<div class="q"${on?"":" data-off"}><span class="qn">Q${i+1}</span><div class="qt">${q.t}<small>${q.s}</small></div><div class="yn">${["是","否"].map((l,k)=>`<button type="button" data-q="${i}" data-a="${k?0:1}" aria-pressed="${on&&QV[i]===(k?false:true)}"${on?"":" disabled"}>${l}</button>`).join("")}</div></div>`}).join("");
+  $("qflow").querySelectorAll("button").forEach(b=>b.onclick=()=>{const i=+b.dataset.q;QV[i]=b.dataset.a==="1";for(let j=i+1;j<QS.length;j++)delete QV[j];renderQ()});
+  const v=$("verdict");v.className="verdict"+(res?" "+res:"");
+  v.innerHTML=res?`<b><i class="lamp ${res}"></i>${LIGHT[res].n}｜${LIGHT[res].act}</b><p>${LIGHT[res].tip}</p>`+(res==="y"?`<button class="next-btn" type="button" id="v-go">打開去識別化工具</button>`:""):`<p style="margin:0">依序回答問題，就會得到燈號。</p>`;
+  if(res==="y")$("v-go").onclick=()=>$("sec-result").scrollIntoView({behavior:"smooth",block:"start"});
 }
-$("app-gen").onclick=()=>showApp("gen");$("app-fu").onclick=()=>showApp("fu");
+const QZ=[
+ ["已公告的年報、季報財務數字","上市櫃公司公開資訊觀測站可查","g","已經公開，直接用沒問題。","直接貼上公告數字，請 AI 做比率分析"],
+ ["IFRS 15 收入認列條文","想請 AI 用白話解釋","g","準則條文是公開資料。","直接貼條文，請 AI 舉製造業例子說明"],
+ ["差異分析報告的文字草稿","已刪掉客戶名稱與實際金額","g","不含名稱與數字，屬於可直接使用的草稿。","直接貼草稿，請 AI 潤飾成主管版本"],
+ ["Excel 公式與假資料欄位","想請 AI 寫樞紐或 XLOOKUP","g","只有結構和假資料，沒有機敏內容。","欄位：客戶代號、發票日、到期日、金額（假資料 5 列）"],
+ ["客戶名稱與應收帳齡明細","要請 AI 分析催收優先順序","y","有客戶名稱和金額，但換成代號、級距後仍能分析。","客戶A｜逾期 31–60 天｜100–500 萬元"],
+ ["部門費用明細，含報支人姓名","想找出異常報支","y","姓名是個資，換成職稱或代號即可分析。","業務部人員A｜交際費｜單筆 1–3 萬元"],
+ ["預算與實際數已換成指數","基期＝100，只看變化","y","已經去識別化，屬黃燈處理後的狀態，可上傳。","營收指數 預算 100｜實際 92｜去年同期 97"],
+ ["客訴退款紀錄，含電話與地址","想歸納退款原因","y","個資要先移除，退款原因與金額級距可保留。","退款原因：瑕疵｜金額 1,000–5,000 元｜共 23 筆"],
+ ["國稅局查核往來函，含統編","想請 AI 整理回覆重點","r","查核內容屬機敏稅務資訊，涉及公司與主管機關往來。","只描述：「查核關注研發費用認列，請列出常見佐證文件」"],
+ ["尚未公告的本季損益表","董事會前想先請 AI 寫摘要","r","未公開財報屬重大資訊，外流可能涉及內線交易。","只描述問題，或改用去年已公告的格式練習"],
+ ["員工薪資單與身分證影本","想核對所得扣繳","r","薪資與身分證是高度敏感個資。","只問規則：「年終獎金的扣繳率怎麼判斷」"],
+ ["銀行帳號與網銀登入資訊","想請 AI 寫付款流程","r","帳號密碼一旦外流，損失無法挽回。","只描述流程，帳號用「付款帳戶A」代替"],
+ ["供應商報價單與議價底價","想請 AI 比價","r","底價是營業秘密，外流會直接傷害談判地位。","只問方法：「三家報價該怎麼建立比價表」"],
+ ["併購評估中的目標公司名稱","想請 AI 做財務模型","r","未公開的併購資訊屬重大資訊。","用公司X、虛構數字練習模型架構"]
+];
+const QA={};
+function renderQz(){
+  $("qz-total").textContent=QZ.length;
+  $("qz").innerHTML=QZ.map((q,i)=>{const a=QA[i];const done=a!==undefined;const ok=a===q[2];
+    return `<li><div class="row"><div class="it">${q[0]}<small>${q[1]}</small></div><div class="pick" role="group" aria-label="${q[0]}的燈號">${["g","y","r"].map(c=>`<button type="button" class="${c}" data-i="${i}" data-c="${c}" aria-pressed="${a===c}" aria-label="${LIGHT[c].n}">${LIGHT[c].n[0]}</button>`).join("")}</div></div>`+
+    (done?`<div class="fb"><span class="${ok?"ok":"ng"}">${ok?"答對了":"再想想"}，這是${LIGHT[q[2]].n}（${LIGHT[q[2]].act}）。</span>${q[3]}<span class="safe">安全寫法：${q[4]}</span></div>`:"")+`</li>`}).join("");
+  $("qz").querySelectorAll(".pick button").forEach(b=>b.onclick=()=>{QA[b.dataset.i]=b.dataset.c;renderQz();renderSbar()});
+  const n=Object.keys(QA).length,c=Object.keys(QA).filter(i=>QA[i]===QZ[i][2]).length;
+  $("qz-score").textContent=`${c} / ${n}`;
+}
+$("qz-reset").onclick=()=>{for(const k in QA)delete QA[k];renderQz();renderSbar()};
+const CL=[["杜絕假性去識別化",[["刪除隱藏工作表、隱藏欄列與篩選掉的資料","只隱藏不算刪除"],["清除註解、頁首頁尾與文件屬性","作者、公司名稱常藏在屬性裡"],["樞紐分析表已轉成數值，沒有原始明細","點兩下樞紐就能展開明細"],["沒有用未經公司核准的線上轉檔或去識別化網站",""]]],
+ ["端到端安全工作流",[["去識別化在本機完成","例如本頁工具，資料不離開瀏覽器"],["已關閉「用我的對話改善模型」",""],["AI 帳號已啟用多重要素驗證（MFA）",""],["編碼表只存在本機，沒有一起貼上",""]]],
+ ["殘餘風險與人的責任",[["依用途選了遮蔽強度","內部討論可部分保留，對外或高敏感用全部編碼"],["檢查過組合資訊不會反推出對象","例如「北區唯一的保健品經銷商」"],["AI 的數字與法條已人工複核",""],["對外文件依公司規範經主管核准",""]]]];
+function renderCl(){
+  let k=0;$("cl").innerHTML=CL.map(g=>`<h4>${g[0]}</h4>`+g[1].map(it=>`<label><input type="checkbox" data-k="${k++}"><span>${it[0]}${it[1]?`<small>${it[1]}</small>`:""}</span></label>`).join("")).join("");
+  $("cl").querySelectorAll("input").forEach(c=>c.onchange=updCl);updCl();
+}
+function updCl(){const all=$("cl").querySelectorAll("input"),n=[...all].filter(c=>c.checked).length;$("cl-n").textContent=`${n} / ${all.length}`;$("cl-bar").style.width=(n/all.length*100)+"%";renderSbar()}
+$("cl-reset").onclick=()=>{$("cl").querySelectorAll("input").forEach(c=>c.checked=false);updCl()};
+
+/* 去識別化：全部在瀏覽器內以規則比對，不呼叫任何網路服務 */
+const DT=[
+ {k:"email",n:"Email",re:/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g},
+ {k:"id",n:"身分證",re:/[A-Z][12]\d{8}/g},
+ {k:"acct",n:"帳號",re:/\d{3,4}-\d{2,4}-\d{5,8}/g},
+ {k:"phone",n:"電話",re:/(?:09\d{2}-?\d{3}-?\d{3}|\(?0\d{1,2}\)?-?\d{3,4}-?\d{4})(?:#\d+)?/g},
+ {k:"ubn",n:"統編",re:/(統編|統一編號)([:：\s]*)(\d{8})/g,g:3},
+ {k:"money",n:"金額",re:/(?:NT\$|新台幣|台幣|\$)\s?\d[\d,]*(?:\.\d+)?\s?(?:億|萬|千)?元?|\d[\d,]*(?:\.\d+)?\s?(?:億|萬)?元/g},
+ {k:"co",n:"公司",re:/[一-鿿A-Za-z]{2,12}(?:股份有限公司|有限公司|企業社|商行)/g},
+ {k:"name",n:"人員"},{k:"kw",n:"關鍵字"}];
+const CO_PRE=/^(?:客戶|供應商|廠商|貴公司|本公司|敝公司|貴|致|與|和|及|向|給|由|對|的|是|為|請|跟)+/;
+const DZ={mode:"full",off:new Set()};
+const SAMPLE=`主旨：宏遠精密股份有限公司（統編：12345678）應收帳款逾期提醒
+
+財務部同仁您好：
+客戶宏遠精密股份有限公司 9 月出貨的料號 HX-2210，發票金額 NT$2,860,000，目前已逾期 49 天。
+對方窗口王小明（0912-345-678，wang.xm@abc-corp.com.tw）表示月底前會匯入本公司台灣銀行帳戶 012-345-678901。
+請陳美華協助確認負責人身分證字號 A123456789 是否與徵信資料一致，並評估是否提列 286,000 元備抵損失。`;
+function splitList(s){return s.split(/[、,，;；\n]+/).map(x=>x.trim()).filter(x=>x.length>=2)}
+function findSpans(text){
+  const spans=[];const taken=new Uint8Array(text.length);
+  const add=(s,e,k)=>{if(e<=s)return;for(let i=s;i<e;i++)if(taken[i])return;for(let i=s;i<e;i++)taken[i]=1;spans.push({s,e,k,v:text.slice(s,e)})};
+  const lit=(list,k)=>list.sort((a,b)=>b.length-a.length).forEach(w=>{let i=0;while((i=text.indexOf(w,i))>-1){add(i,i+w.length,k);i+=w.length}});
+  lit(splitList($("dz-kw").value),"kw");
+  DT.forEach(t=>{if(!t.re)return;t.re.lastIndex=0;let m;while((m=t.re.exec(text))){
+    let s=m.index,v=m[0];
+    if(t.g){s=m.index+m[1].length+m[2].length;v=m[3]}
+    if(t.k==="co"){const p=v.match(CO_PRE);if(p){s+=p[0].length;v=v.slice(p[0].length)}if(v.replace(/(股份有限公司|有限公司|企業社|商行)$/,"").length<2)continue}
+    add(s,s+v.length,t.k)}});
+  lit(splitList($("dz-names").value),"name");
+  return spans.sort((a,b)=>a.s-b.s);
+}
+function moneyVal(v){const n=parseFloat(v.replace(/[^\d.]/g,""));if(isNaN(n))return null;return n*(/億/.test(v)?1e8:/萬/.test(v)?1e4:/千/.test(v)?1e3:1)}
+function bucket(n){const B=[[1e5,"10 萬元以下"],[5e5,"10–50 萬元"],[1e6,"50–100 萬元"],[5e6,"100–500 萬元"],[1e7,"500–1,000 萬元"],[1e8,"1,000 萬–1 億元"]];for(const b of B)if(n<b[0])return b[1];return "1 億元以上"}
+function maskDigits(v,keepHead,keepTail){const ds=[...v].filter(c=>/\d/.test(c)).length;let i=0;return [...v].map(c=>{if(!/\d/.test(c))return c;i++;return(i<=keepHead||i>ds-keepTail)?c:"*"}).join("")}
+function partial(sp){const v=sp.v;switch(sp.k){
+  case "email":{const [u,d]=v.split("@");return u[0]+"***@***."+d.split(".").slice(-2).join(".")}
+  case "id":return v.slice(0,3)+"*****"+v.slice(-2);
+  case "acct":return maskDigits(v,0,4);
+  case "phone":return maskDigits(v,4,3);
+  case "ubn":return v.slice(0,4)+"****";
+  case "money":{const n=moneyVal(v);return n===null?"[金額]":bucket(n)}
+  case "co":{const m=v.match(/(股份有限公司|有限公司|企業社|商行)$/);const core=v.slice(0,v.length-m[0].length);return core.slice(0,2)+"○○"+m[0]}
+  case "name":return v[0]+"○".repeat(v.length-1);
+  default:return v[0]+"＊".repeat(Math.max(2,v.length-1))}}
+const ABC=i=>{let s="";i++;while(i>0){i--;s=String.fromCharCode(65+i%26)+s;i=Math.floor(i/26)}return s};
+function runDz(){
+  const text=$("dz-in").value;const spans=findSpans(text);
+  const cnt={};spans.forEach(s=>cnt[s.k]=(cnt[s.k]||0)+1);
+  $("dz-types").innerHTML=DT.filter(t=>cnt[t.k]).map(t=>`<button type="button" class="chip" data-k="${t.k}" aria-pressed="${!DZ.off.has(t.k)}">${t.n}<b>${cnt[t.k]}</b></button>`).join("")||`<span class="fake">尚未偵測到項目</span>`;
+  $("dz-types").querySelectorAll("button").forEach(b=>b.onclick=()=>{const k=b.dataset.k;DZ.off.has(k)?DZ.off.delete(k):DZ.off.add(k);runDz()});
+  const map=new Map(),seq={};const T=Object.fromEntries(DT.map(t=>[t.k,t.n]));
+  const code=sp=>{const key=sp.k+"|"+sp.v;if(map.has(key))return map.get(key).c;seq[sp.k]=(seq[sp.k]||0)+1;const n=seq[sp.k];
+    const c=sp.k==="co"?"公司"+ABC(n-1):sp.k==="name"?"人員"+ABC(n-1):`[${T[sp.k]}-${n}]`;map.set(key,{c,v:sp.v,t:T[sp.k]});return c};
+  let out="",html="",p=0;
+  spans.filter(s=>!DZ.off.has(s.k)).forEach(sp=>{const r=DZ.mode==="full"?code(sp):partial(sp);out+=text.slice(p,sp.s)+r;html+=esc(text.slice(p,sp.s))+`<mark title="${esc(T[sp.k])}">${esc(r)}</mark>`;p=sp.e});
+  out+=text.slice(p);html+=esc(text.slice(p));
+  DZ.out=out;DZ.map=[...map.values()];
+  $("dz-out").innerHTML=html||`<span class="fake">結果會出現在這裡</span>`;
+  const full=DZ.mode==="full";$("dz-mapwrap").hidden=!full;$("dz-partnote").hidden=full;
+  $("dz-map").innerHTML=DZ.map.map(m=>`<tr><td>${esc(m.c)}</td><td>${esc(m.v)}</td><td>${esc(m.t)}</td></tr>`).join("")||`<tr><td colspan="3" class="fake">尚無資料</td></tr>`;
+  runBack();renderSbar();
+}
+function runBack(){let t=$("dz-ai").value;if(!t){$("dz-back").innerHTML=`<span class="fake">貼上 AI 回答後，代號會自動換回原文</span>`;DZ.back="";return}
+  const ms=(DZ.map||[]).slice().sort((a,b)=>b.c.length-a.c.length);let html=esc(t);
+  ms.forEach(m=>{t=t.split(m.c).join(m.v);html=html.split(esc(m.c)).join(`<mark>${esc(m.v)}</mark>`)});DZ.back=t;$("dz-back").innerHTML=html}
+function setMode(m){DZ.mode=m;$("dz-full").setAttribute("aria-pressed",m==="full");$("dz-part").setAttribute("aria-pressed",m==="part");runDz()}
+$("dz-full").onclick=()=>setMode("full");$("dz-part").onclick=()=>setMode("part");
+$("dz-sample").onclick=()=>{$("dz-in").value=SAMPLE;$("dz-names").value="王小明、陳美華";$("dz-kw").value="HX-2210";DZ.off.clear();runDz()};
+$("dz-clear").onclick=()=>{$("dz-in").value="";$("dz-ai").value="";runDz()};
+["dz-in","dz-names","dz-kw"].forEach(id=>$(id).oninput=runDz);$("dz-ai").oninput=runBack;
+$("dz-copy").onclick=()=>copy(DZ.out||"",$("dz-copy"));$("dz-copy2").onclick=()=>copy(DZ.back||"",$("dz-copy2"));
+function renderSbar(){if(!$("sb-lbl"))return;const n=Object.keys(QA).length;const c=$("cl").querySelectorAll("input:checked").length;$("sb-lbl").textContent=`練習 ${n}/${QZ.length}・檢查 ${c}/12`}
+$("sb-go").onclick=()=>$("sec-result").scrollIntoView({behavior:"smooth",block:"start"});
+if("IntersectionObserver" in window){
+  new IntersectionObserver(es=>es.forEach(e=>$("sbar").classList.toggle("away",e.isIntersecting)),{rootMargin:"0px 0px -50% 0px"}).observe($("sec-result"));
+}
+renderQ();renderQz();renderCl();$("dz-sample").click();
+function showApp(v){
+  ["gen","fu","sec"].forEach(k=>{$("app-"+k).setAttribute("aria-selected",k===v);$("view-"+k).hidden=k!==v});
+  document.body.dataset.view=v;
+  try{history.replaceState(null,"",v==="fu"?"#followup":v==="sec"?"#security":location.pathname+location.search)}catch(e){}
+}
+$("app-gen").onclick=()=>showApp("gen");$("app-fu").onclick=()=>showApp("fu");$("app-sec").onclick=()=>showApp("sec");
 $("fu-to-gen").onclick=()=>{showApp("gen");window.scrollTo({top:0})};
+document.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>{showApp(b.dataset.go);window.scrollTo({top:0})});
 renderFu();
-if(location.hash==="#followup")showApp("fu");
+showApp(location.hash==="#followup"?"fu":location.hash==="#security"?"sec":"gen");
 </script>
 </body>
 </html>
