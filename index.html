@@ -459,6 +459,10 @@ body:not([data-view="gen"]) #mbar,body:not([data-view="fu"]) #fbar,body:not([dat
   .tsl input[type=range]::-webkit-slider-thumb{width:28px;height:28px}
   .dz-ask textarea{font-size:16px}
 }
+.mrow{margin:-2px 0 10px}
+.mcount{display:inline-block;font-family:var(--f-mono);font-size:12px;padding:3px 10px;border-radius:999px;background:var(--m-soft);color:var(--m);align-self:center;white-space:nowrap}
+.mcount.full{background:var(--m);color:var(--panel)}
+.mwarn{color:var(--r);font-weight:500}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -523,7 +527,8 @@ body:not([data-view="gen"]) #mbar,body:not([data-view="fu"]) #fbar,body:not([dat
       </div>
 
       <div class="step m">
-        <div class="step-head"><div class="badge">M</div><div><h2>方法：用什麼條件讓它做得更好？</h2><p>可複選。這些是財務工作最常用的提問技巧。</p></div></div>
+        <div class="step-head"><div class="badge">M</div><div><h2>方法：用什麼條件讓它做得更好？</h2><p>最多選 3 項，挑這次最重要的。「台灣用語」已經自動加進指令。</p></div></div>
+        <div class="mrow"><span class="mcount" id="m-count"></span></div>
         <div class="chips" id="methods" role="group" aria-label="方法"></div>
         <div class="tip" id="method-tip"></div>
       </div>
@@ -1371,7 +1376,7 @@ const pickEx=o=>o?(o[S.ind==="other"?"mfg":S.ind]||o.all||""):"";
 const indName=()=>S.ind==="other"?(S.indOther.trim()||"你的產業"):IND.find(d=>d.id===S.ind).name;
 
 const SIZES=["上市櫃公司","興櫃公司","大型企業","外商公司","中小企業","育成進駐新創","政府或法人機構"];
-const S={size:-1,ind:"ocean",indOther:"",applied:new Set(),scen:"bva",role:0,roleCustom:"",levels:new Set([0]),tasks:new Set([0,1]),taskCustom:"",aud:0,fmt:1,len:1,methods:new Set(["cot","assume","tw"]),lastMethod:"cot",co:"",period:"",done:new Set()};
+const S={size:-1,ind:"ocean",indOther:"",applied:new Set(),scen:"bva",role:0,roleCustom:"",levels:new Set([0]),tasks:new Set([0,1]),taskCustom:"",aud:0,fmt:1,len:1,methods:new Set(["cot","assume"]),lastMethod:"cot",mWarn:false,co:"",period:"",done:new Set()};
 const $=id=>document.getElementById(id);
 const esc=s=>s.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
 const cur=()=>SCEN.find(s=>s.id===S.scen);
@@ -1391,14 +1396,18 @@ function renderBuilder(){
   fill($("aud"),AUD.map((a,i)=>chip(a,S.aud===i,()=>{S.aud=i;update()})));
   fill($("fmt"),FMT.map((a,i)=>chip(a,S.fmt===i,()=>{S.fmt=i;update()})));
   fill($("len"),LEN.map((a,i)=>chip(a,S.len===i,()=>{S.len=i;update()})));
-  fill($("methods"),METHODS.map(m=>chip(m.name,S.methods.has(m.id),()=>{toggle(S.methods,m.id);S.lastMethod=m.id;update()},true)));
+  fill($("methods"),METHODS.filter(m=>m.id!=="tw").map(m=>chip(m.name,S.methods.has(m.id),()=>{
+    if(!S.methods.has(m.id)&&S.methods.size>=M_MAX){S.mWarn=true;S.lastMethod=m.id;update();return}
+    S.mWarn=false;toggle(S.methods,m.id);S.lastMethod=m.id;update()},true)));
   const m=METHODS.find(x=>x.id===S.lastMethod);
-  $("method-tip").innerHTML=m.tip;
+  $("m-count").textContent=`已選 ${S.methods.size} / ${M_MAX}`;$("m-count").classList.toggle("full",S.methods.size>=M_MAX);
+  $("method-tip").innerHTML=(S.mWarn?`<span class="mwarn">已經選滿 ${M_MAX} 項。想換成「${m.name}」，請先取消一項。條件太多時，AI 容易顧此失彼，或只做到前面幾項。</span><br>`:"")+m.tip;
 }
 function toggle(set,v){set.has(v)?set.delete(v):set.add(v)}
 
 function roleText(){return S.roleCustom.trim()||cur().roles[S.role]}
 function taskList(){const sc=cur();const t=sc.tasks.filter((_,i)=>S.tasks.has(i));if(S.taskCustom.trim())t.push(S.taskCustom.trim());return t}
+const M_MAX=3;
 function methodList(){return METHODS.filter(m=>S.methods.has(m.id))}
 function needList(){
   const sc=cur(),ex=EX[sc.id]||[];
@@ -1433,7 +1442,7 @@ function buildPrompt(html){
   const t=taskList();
   if(t.length){r+=w(`我需要你協助「${sc.name}」，請完成以下任務：`)+"\n";t.forEach((x,i)=>r+=w(`${i+1}. ${x}`)+"\n")}
   else r+=P("【請至少選一項任務，告訴 AI 要完成什麼】")+"\n";
-  r+=w(`報告對象：${AUD[S.aud]}；輸出格式：${FMT[S.fmt]}；篇幅：${LEN[S.len]}。`)+"\n\n";
+  r+=w(`報告對象：${AUD[S.aud]}；輸出格式：${FMT[S.fmt]}；篇幅：${LEN[S.len]}。請使用繁體中文與台灣財會慣用語。`)+"\n\n";
   r+=H("m","# 方法（M）")+"\n";
   const ms=methodList();
   if(ms.length)ms.forEach(m=>{const parts=m.text.split("\n");r+=w("- "+parts[0])+"\n";if(parts[1])r+="  "+P(parts[1])+"\n"});
