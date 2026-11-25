@@ -215,11 +215,11 @@ button,input,textarea{-webkit-tap-highlight-color:transparent;touch-action:manip
 }
 @media (hover:none){.chip:hover,.scen button:hover{border-color:var(--line)}}
 /* App tabs: 指令產生器 / 追問技巧練習 */
-.apptabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:18px}
+.apptabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:18px}
 .apptabs button{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;cursor:pointer;background:var(--panel);border:1.5px solid var(--line);border-radius:12px;padding:10px 14px;font-size:16px;font-weight:700;font-family:var(--f-display);min-width:0}
 .apptabs button small{font-family:var(--f-body);font-weight:400;font-size:12.5px;color:var(--muted)}
 .apptabs button[aria-selected="true"]{border-color:var(--brand);background:var(--brand-soft);box-shadow:inset 0 -3px 0 var(--brand)}
-body:not([data-view="gen"]) #mbar,body:not([data-view="fu"]) #fbar,body:not([data-view="sec"]) #sbar{display:none!important}
+body:not([data-view="gen"]) #mbar,body:not([data-view="fu"]) #fbar,body:not([data-view="sec"]) #sbar,body:not([data-view="nb"]) #nbar{display:none!important}
 .homework{margin-top:22px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 18px;align-items:start}
 .homework h2{font-size:17px;font-weight:600;grid-column:1/-1}
 .homework ol{margin:0;padding-left:22px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 28px;grid-column:1/-1;font-size:14.5px}
@@ -370,6 +370,58 @@ body:not([data-view="gen"]) #mbar,body:not([data-view="fu"]) #fbar,body:not([dat
   .dz textarea,.dz input{font-size:16px}
   .dz-mode{grid-template-columns:minmax(0,1fr)}
 }
+/* Notebook 簡報指令 */
+.nb-gold{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:22px}
+.nb-gold .pillar .pn{font-family:var(--f-mono)}
+.nb-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:12px}
+.nb-step{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;min-width:0;font-size:13.5px}
+.nb-step h4{margin:0 0 4px;font-size:15px;display:flex;gap:8px;align-items:center;font-family:var(--f-body)}
+.nb-step h4 b{flex:none;width:24px;height:24px;border-radius:6px;background:var(--brand);color:var(--brand-ink);display:grid;place-items:center;font-size:13px;font-family:var(--f-mono)}
+.nb-step p{margin:0;color:var(--muted)}
+.nb-step .eg{margin-top:8px;padding:7px 10px;border-radius:8px;background:var(--bg);font-size:12.5px}
+.nb-step .eg ul{margin:2px 0 0;padding-left:18px}
+.nb-step .eg .x{color:var(--muted);text-decoration:line-through}
+.nb-h{font-size:18px;font-weight:600;margin:26px 0 0}
+.nb-h small{font-family:var(--f-body);font-weight:400;font-size:13px;color:var(--muted);margin-left:8px}
+.pgrp{margin-top:10px}
+.pgrp:first-of-type{margin-top:0}
+.pgrp b{display:block;font-size:12px;color:var(--muted);letter-spacing:.06em;margin-bottom:6px}
+.nb-own{display:flex;gap:8px;align-items:center;margin-top:10px}
+.nb-own label{font-size:12.5px;color:var(--muted);flex:none}
+.nb-own input{font:inherit;font-size:14px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:6px 10px;width:100%;min-width:0}
+.nb-own.on input{border-color:var(--brand);background:var(--brand-soft)}
+.sw{display:inline-flex;margin-right:6px;vertical-align:-2px}
+.sw em{width:12px;height:12px;border-radius:50%;display:inline-block;border:1px solid rgba(0,0,0,.12);margin-right:-3px}
+.req{font-size:11px;padding:1px 8px;border-radius:999px;background:var(--a-soft);color:var(--a);font-family:var(--f-body);font-weight:700;margin-left:6px;vertical-align:2px}
+.nb-prompt{font-family:var(--f-mono);font-size:16px;line-height:1.9;margin:0;padding:14px 16px;background:var(--panel);border:1px solid var(--slip-line);border-radius:8px;word-break:break-word}
+.nb-prompt.long{font-size:14px;line-height:1.85}
+.nb-prompt .p{border-radius:3px;padding:0 2px}
+.nb-prompt .aud{background:var(--a-soft)} .nb-prompt .sty{background:var(--t-soft)} .nb-prompt .col{background:var(--m-soft)} .nb-prompt .foc{background:var(--ap)} .nb-prompt .ext{background:var(--bg);border-bottom:1.5px dashed var(--muted)}
+.nb-meter{margin-top:10px}
+.nb-meter .bar{height:8px;background:var(--bg);border-radius:999px;overflow:hidden}
+.nb-meter .bar i{display:block;height:100%;background:var(--ok);transition:width .2s}
+.nb-meter .bar i.w{background:var(--y)} .nb-meter .bar i.x{background:var(--r)}
+.nb-meter .txt{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:12.5px;margin-top:4px;color:var(--muted)}
+.nb-meter .txt b{font-family:var(--f-mono);font-size:15px;color:var(--ink)}
+.nb-meter .ok{color:var(--ok)} .nb-meter .w{color:var(--y)} .nb-meter .x{color:var(--r)}
+.nb-legend{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;font-size:12px;color:var(--muted)}
+.nb-legend span{display:inline-flex;gap:4px;align-items:center}
+.nb-legend em{width:14px;height:10px;border-radius:2px;display:inline-block}
+.nb-qs{list-style:none;margin:6px 0 0;padding:0;display:flex;flex-direction:column;gap:6px}
+.nb-qs li{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:8px;align-items:start;padding:8px 10px;border:1px solid var(--slip-line);border-radius:8px;background:var(--panel);font-size:13.5px}
+.nb-qs i{font-style:normal;font-family:var(--f-mono);font-size:12px;color:var(--brand);font-weight:700;padding-top:2px}
+.nb-paste{margin:0;padding-left:20px;font-size:13.5px}
+.nb-go{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.nb-go a.btn{text-decoration:none}
+@media (max-width:900px){.nb-gold{grid-template-columns:minmax(0,1fr)}.nb-steps{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:720px){
+  .apptabs{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .nb-steps{grid-template-columns:minmax(0,1fr)}
+  .nb-own input{font-size:16px}
+  .nb-prompt{font-size:15px;padding:12px}
+  .nb-qs li{grid-template-columns:auto minmax(0,1fr)}
+  .nb-qs li .copy-one{grid-column:2;justify-self:start}
+}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -393,6 +445,7 @@ body:not([data-view="gen"]) #mbar,body:not([data-view="fu"]) #fbar,body:not([dat
     <button type="button" role="tab" id="app-gen" aria-selected="true" aria-controls="view-gen">指令產生器<small>用 ATM 組出第一版指令</small></button>
     <button type="button" role="tab" id="app-fu" aria-selected="false" aria-controls="view-fu">追問技巧練習<small>拿到回答後，怎麼繼續問</small></button>
     <button type="button" role="tab" id="app-sec" aria-selected="false" aria-controls="view-sec">資安紅綠燈<small>上傳 AI 前先分級、去識別化</small></button>
+    <button type="button" role="tab" id="app-nb" aria-selected="false" aria-controls="view-nb">Notebook 簡報指令<small>30 字內組出簡報風格</small></button>
   </nav>
 
   <div class="work" id="view-gen" role="tabpanel" aria-labelledby="app-gen">
@@ -608,6 +661,53 @@ body:not([data-view="gen"]) #mbar,body:not([data-view="fu"]) #fbar,body:not([dat
       </aside>
     </div>
   </section>
+  <section id="view-nb" role="tabpanel" aria-labelledby="app-nb" hidden>
+    <div class="nb-gold">
+      <div class="pillar"><div class="pn">STEP A</div><h3>提供重要參考</h3><dl><dd>上傳檔案、貼網址、探索來源。資料越完整，AI 越不會亂編。財務資料上傳前，先過一次<button class="linkbtn" type="button" data-go="sec">資安紅綠燈</button>。</dd></dl></div>
+      <div class="pillar"><div class="pn">STEP B</div><h3>問答強化核心</h3><dl><dd>用三個問答把重點問出來，存成記事，再轉回來源。</dd></dl></div>
+      <div class="pillar"><div class="pn">STEP C</div><h3>輸出質感簡報</h3><dl><dd>工作室選「簡報」，貼上 30 字以內的風格指令，按生成。</dd></dl></div>
+    </div>
+
+    <h2 class="nb-h">三問答法六步驟<small>範例主題：進駐廠商第三季財務健檢</small></h2>
+    <div class="nb-steps">
+      <div class="nb-step"><h4><b>1</b>建筆記本</h4><p>按「＋ 建立新的筆記本」，一本筆記本只放一個報告主題。</p><div class="eg">✓ 命名「115 Q3｜進駐廠商財務健檢」<br><span class="x">「海科處全部資料」</span>：主題太散，AI 抓不到重點</div></div>
+      <div class="nb-step"><h4><b>2</b>匯入參考</h4><p>本地檔案、雲端硬碟、網址、貼上文字都可以當來源。</p><div class="eg">5 個來源、4 種形式<ul><li>去識別化後的損益表與預算表（PDF）</li><li>海洋產業補助公告（網址）</li><li>產業趨勢報告（網站）</li><li>產品介紹影片（YouTube）</li><li>AI 整理的同業比較（貼上文字）</li></ul></div></div>
+      <div class="nb-step"><h4><b>3</b>篩選匯入</h4><p>「探索來源」找到的資料不要全收，只勾和主題直接相關的。</p><div class="eg">探索到 10 筆，只匯入 3 筆<ul><li>海洋產業產值統計</li><li>同業上市櫃公司年報</li><li>中小企業融資補助公告</li><li class="x">海洋生物科普文章（和財務健檢無關）</li></ul></div></div>
+      <div class="nb-step"><h4><b>4</b>問答整理</h4><p>至少問 3 題，每題回答下方按「📌 儲存至記事」。三題範本在下方指令卡裡，會跟著你選的對象與重點變。</p><div class="eg">問 Q1，AI 回答「毛利率下滑主因是原物料上漲與匯率」，存成記事「Q3 三大結論」</div></div>
+      <div class="nb-step"><h4><b>5</b>轉回來源</h4><p>記事 ⋮ →「將所有記事轉換為來源」，來源清單先取消全選，再勾記事與重點來源。</p><div class="eg">✓ 所有記事　✓ 去識別化損益表<br><span class="x">其餘 6 個來源</span>取消勾選</div></div>
+      <div class="nb-step"><h4><b>6</b>貼上指令生成</h4><p>工作室 → 簡報 ✏️ → 貼上指令 → 生成。指令用下面的產生器組。</p><div class="eg">「對象總經理，商務簡約風、深藍金配色，結論先行。」</div></div>
+    </div>
+
+    <div class="work">
+      <section class="builder" aria-label="簡報指令設定">
+        <div class="step s0">
+          <div class="step-head"><div class="badge">情</div><div><h2>一鍵套用情境</h2><p>依進駐廠商、海科處同仁、新創團隊的常見簡報挑選，套用後還能再調整。</p></div></div>
+          <div id="nb-presets"></div>
+        </div>
+        <div id="nb-dims" class="builder"></div>
+      </section>
+      <aside class="result" id="nb-result" aria-label="簡報指令">
+        <div class="slip">
+          <div class="slip-top"><h2>Notebook 簡報指令</h2><small>目標 30 字以內</small></div>
+          <div class="tabs" role="tablist"><button type="button" role="tab" id="nb-short" aria-selected="true">精簡指令</button><button type="button" role="tab" id="nb-long" aria-selected="false">詳細版</button></div>
+          <div class="pane">
+            <div class="nb-prompt" id="nb-prompt"></div>
+            <div class="nb-meter" id="nb-meter"><div class="bar"><i></i></div><div class="txt"></div></div>
+            <div class="nb-legend"><span><em style="background:var(--a-soft)"></em>報告對象</span><span><em style="background:var(--t-soft)"></em>風格</span><span><em style="background:var(--m-soft)"></em>顏色</span><span><em style="background:var(--ap)"></em>內容重點</span></div>
+            <div class="actions">
+              <button class="btn" type="button" id="nb-copy">複製指令</button>
+              <button class="btn ghost" type="button" id="nb-rand">隨機一組</button>
+            </div>
+            <div class="fu-sec"><h3>先問這三題，再生成簡報</h3><ul class="nb-qs" id="nb-qs"></ul></div>
+            <div class="fu-sec"><div class="nb-go"><h3 style="margin:0">貼到哪裡？</h3><a class="btn sm" href="https://notebook.google.com/" target="_blank" rel="noopener">開啟 Gemini Notebook ↗</a></div>
+              <ol class="nb-paste"><li>工作室 → 簡報 ✏️ → 格式選「簡報投影片」</li><li>語言選「中文（繁體）」</li><li>貼到「說明要建立的簡報」→ 生成</li></ol>
+              <p class="mnote">生成後不滿意？只改一個選項再生成一次，比較兩版差在哪裡。</p></div>
+          </div>
+        </div>
+        <div class="safety"><b>提醒：</b>NotebookLM 會讀你上傳的所有來源。損益表、薪資、客戶與投資資料，先依資安紅綠燈分級並去識別化再上傳。</div>
+      </aside>
+    </div>
+  </section>
 </div>
 
 <nav class="mbar" id="mbar" aria-label="指令完成度">
@@ -621,6 +721,10 @@ body:not([data-view="gen"]) #mbar,body:not([data-view="fu"]) #fbar,body:not([dat
 <nav class="mbar" id="sbar" aria-label="資安練習進度">
   <div class="dots"><span class="lbl" id="sb-lbl"></span></div>
   <button class="btn" type="button" id="sb-go">去識別化工具</button>
+</nav>
+<nav class="mbar" id="nbar" aria-label="目前的簡報指令">
+  <div class="dots"><span class="lbl" id="nb-lbl"></span><span class="lbl" id="nb-n" style="flex:none"></span></div>
+  <button class="btn" type="button" id="nb-go">複製</button>
 </nav>
 
 <script>
@@ -1573,16 +1677,120 @@ if("IntersectionObserver" in window){
   new IntersectionObserver(es=>es.forEach(e=>$("sbar").classList.toggle("away",e.isIntersecting)),{rootMargin:"0px 0px -50% 0px"}).observe($("sec-result"));
 }
 renderQ();renderQz();renderCl();pickCase("tenant");
-function showApp(v){
-  ["gen","fu","sec"].forEach(k=>{$("app-"+k).setAttribute("aria-selected",k===v);$("view-"+k).hidden=k!==v});
-  document.body.dataset.view=v;
-  try{history.replaceState(null,"",v==="fu"?"#followup":v==="sec"?"#security":location.pathname+location.search)}catch(e){}
+/* ===== Notebook 簡報指令 ===== */
+const ND=[
+ {k:"aud",name:"報告對象",hint:"誰坐在台下？",req:1,def:"boss",ph:"例：銀行授信主管",
+  o:[{id:"boss",l:"總經理",s:"總經理",L:"總經理，時間有限，要先看結論、關鍵數字與需要決策的事"},
+     {id:"board",l:"董事會",s:"董事會",L:"董事會與股東，關心獲利、風險與資金運用"},
+     {id:"vc",l:"投資人",s:"投資人",L:"投資人，關心市場規模、商業模式、營收與募資用途"},
+     {id:"head",l:"處室主管",s:"處室主管",L:"處室主管，要看執行進度、成果亮點與待決事項"},
+     {id:"jury",l:"審查委員",s:"審查委員",L:"計畫審查委員，重視目標達成率、經費執行與佐證資料"},
+     {id:"tenant",l:"進駐廠商",s:"進駐廠商",L:"進駐廠商，想知道能得到哪些資源、怎麼申請"},
+     {id:"client",l:"通路客戶",s:"通路客戶",L:"通路與客戶，在意產品賣點、價格與合作條件"},
+     {id:"team",l:"團隊夥伴",s:"團隊夥伴",L:"公司同仁或團隊成員，需要清楚的分工與時程"},
+     {id:"judge",l:"競賽評審",s:"競賽評審",L:"創新競賽評審，重視技術亮點、可行性與團隊組成"}]},
+ {k:"sty",name:"風格",hint:"整體設計調性",req:1,def:"biz",ph:"例：海洋探索",
+  o:[{id:"biz",l:"商務簡約",s:"商務簡約",L:"商務簡約"},
+     {id:"consult",l:"顧問報告",s:"顧問報告",L:"顧問報告（每頁結論標題＋圖表）"},
+     {id:"dash",l:"數據儀表板",s:"數據儀表板",L:"數據儀表板"},
+     {id:"gov",l:"公部門報告",s:"公部門報告",L:"政府計畫成果報告（章節清楚、指標對照）"},
+     {id:"tech",l:"科技未來",s:"科技未來",L:"科技未來感"},
+     {id:"flat",l:"扁平資訊圖",s:"扁平資訊圖",L:"扁平化資訊圖表"},
+     {id:"mini",l:"極簡留白",s:"極簡留白",L:"極簡大量留白"},
+     {id:"mag",l:"雜誌編輯",s:"雜誌編輯",L:"雜誌編輯排版"}]},
+ {k:"col",name:"顏色",hint:"主色調",req:1,def:"navy",ph:"例：海軍藍＋珊瑚橘",
+  o:[{id:"ocean",l:"海洋藍綠",s:"海洋藍綠",L:"海洋藍綠",c:["#0b4f6c","#20a39e","#eef7f6"]},
+     {id:"navy",l:"深藍金",s:"深藍金",L:"深藍搭配金色",c:["#1f3a5f","#c9a55c","#f5f1e8"]},
+     {id:"moran",l:"莫蘭迪",s:"莫蘭迪",L:"低彩度莫蘭迪色",c:["#9aa5a0","#c8b6a6","#e8e2d9"]},
+     {id:"bw",l:"黑白高對比",s:"黑白高對比",L:"黑白高對比，點綴單一強調色",c:["#111111","#ffffff","#e63946"]},
+     {id:"earth",l:"大地綠棕",s:"大地綠棕",L:"森林大地色（綠、棕）",c:["#4f6b45","#8b6a4a","#ede6d6"]},
+     {id:"orange",l:"活力橘黃",s:"活力橘黃",L:"活力橘黃",c:["#f28c28","#ffd23f","#fff8ec"]},
+     {id:"bluepurple",l:"藍紫漸層",s:"藍紫漸層",L:"藍紫漸層",c:["#3a4fd6","#7b4cd8","#eef0ff"]},
+     {id:"wine",l:"酒紅奶茶",s:"酒紅奶茶",L:"酒紅搭配奶茶色",c:["#7a2638","#c9a98c","#f6efe7"]}]},
+ {k:"foc",name:"內容重點",hint:"這份簡報怎麼說服人",req:1,def:"concl",ph:"例：強調現金流改善",
+  o:[{id:"data",l:"數據佐證",s:"用數據佐證",L:"每個論點都用數據佐證，並標出來源"},
+     {id:"concl",l:"結論先行",s:"結論先行",L:"每頁標題就是結論，先講結論再說明"},
+     {id:"prob",l:"痛點→解方",s:"先痛點後解方",L:"先點出痛點，再提出解決方案"},
+     {id:"compare",l:"比較分析",s:"比較優劣",L:"用比較表呈現各方案或各期的優劣"},
+     {id:"frame",l:"架構圖整理",s:"用架構圖整理",L:"用 SWOT、流程或架構圖整理重點"},
+     {id:"action",l:"行動建議",s:"結尾給行動建議",L:"結尾給出具體可執行的行動建議與負責人"},
+     {id:"story",l:"案例故事",s:"用案例說故事",L:"用真實案例說故事，帶出觀點"},
+     {id:"plain",l:"術語轉白話",s:"術語轉白話",L:"把技術與財務術語轉成白話說明"}]},
+ {k:"img",name:"圖像",hint:"選填",req:0,def:"",ph:"例：水下機器人照片",
+  o:[{id:"chart",l:"圖表為主",s:"多用圖表",L:"以圖表與數字為主要視覺"},
+     {id:"icon",l:"扁平小圖示",s:"配扁平圖示",L:"圖像使用風格清新的扁平小圖示"},
+     {id:"sea",l:"海洋實景",s:"配海洋實景照",L:"圖像使用海洋與港口的實景照片"},
+     {id:"3d",l:"3D 立體",s:"配3D圖示",L:"圖像使用 3D 立體圖示"},
+     {id:"hand",l:"手繪插圖",s:"配手繪插圖",L:"圖像使用手繪插圖"}]}];
+const NP=[
+ {g:"進駐廠商｜財務會計",l:"月結損益給總經理",v:{aud:"boss",sty:"biz",col:"navy",foc:"concl"}},
+ {g:"進駐廠商｜財務會計",l:"年度預算給董事會",v:{aud:"board",sty:"consult",col:"bw",foc:"data"}},
+ {g:"進駐廠商｜財務會計",l:"募資簡報給投資人",v:{aud:"vc",sty:"tech",col:"ocean",foc:"prob"}},
+ {g:"海科處｜行政同仁",l:"育成成果給主管",v:{aud:"head",sty:"dash",col:"ocean",foc:"data"}},
+ {g:"海科處｜行政同仁",l:"計畫期末審查",v:{aud:"jury",sty:"gov",col:"navy",foc:"frame"}},
+ {g:"海科處｜行政同仁",l:"進駐招商說明會",v:{aud:"tenant",sty:"flat",col:"ocean",foc:"action"}},
+ {g:"新創｜學生團隊",l:"ROV 競賽提案",v:{aud:"judge",sty:"tech",col:"bluepurple",foc:"story"}},
+ {g:"新創｜學生團隊",l:"技術成果說給總經理",v:{aud:"boss",sty:"mini",col:"earth",foc:"plain"}},
+ {g:"業務｜產品行銷",l:"新品提案給通路",v:{aud:"client",sty:"mag",col:"orange",foc:"prob"}},
+ {g:"業務｜產品行銷",l:"業績檢討給團隊",v:{aud:"team",sty:"dash",col:"moran",foc:"compare"}}];
+const NS={};ND.forEach(d=>NS[d.k]={sel:d.def,own:""});let NM="short";
+const ndim=k=>ND.find(d=>d.k===k);
+function npick(k){const d=ndim(k),st=NS[k];if(st.sel==="own"){const t=st.own.trim();return t?{s:t,L:t,own:1}:null}return d.o.find(o=>o.id===st.sel)||null}
+function renderNbDims(){
+  $("nb-dims").innerHTML=ND.map((d,i)=>{const st=NS[d.k];
+    const chips=d.o.map(o=>`<button class="chip" type="button" data-k="${d.k}" data-id="${o.id}" aria-pressed="${st.sel===o.id}">${o.c?`<span class="sw">${o.c.map(c=>`<em style="background:${c}"></em>`).join("")}</span>`:""}${o.l}</button>`).join("")+(d.req?"":`<button class="chip" type="button" data-k="${d.k}" data-id="" aria-pressed="${st.sel===""}">不指定</button>`);
+    return `<div class="step s0"><div class="step-head"><div class="badge">${i+1}</div><div><h2>${d.name}${d.req?'<span class="req">必選</span>':""}</h2><p>${d.hint}</p></div></div><div class="chips" role="group" aria-label="${d.name}">${chips}</div><div class="nb-own${st.sel==="own"?" on":""}"><label for="nbo-${d.k}">自己填</label><input id="nbo-${d.k}" data-k="${d.k}" maxlength="20" placeholder="${d.ph}"></div></div>`}).join("");
 }
-$("app-gen").onclick=()=>showApp("gen");$("app-fu").onclick=()=>showApp("fu");$("app-sec").onclick=()=>showApp("sec");
+function syncNb(k){$("nb-dims").querySelectorAll(`.chip[data-k="${k}"]`).forEach(b=>b.setAttribute("aria-pressed",String(NS[k].sel===b.dataset.id)));$("nbo-"+k).parentElement.classList.toggle("on",NS[k].sel==="own")}
+function nbParts(){const a=npick("aud"),s=npick("sty"),c=npick("col"),f=npick("foc"),im=npick("img");const seg=[];
+  if(a)seg.push([["對象","aud",a.s]]);
+  const look=[];if(s)look.push(["","sty",s.s+(/[風感]$/.test(s.s)?"":"風")]);if(c)look.push(["","col",c.s+(c.own&&/色$/.test(c.s)?"":"配色")]);if(look.length)seg.push(look);
+  if(im)seg.push([["","ext",im.s]]);if(f)seg.push([["","foc",f.s]]);return seg}
+const nbShort=seg=>seg.map(g=>g.map(([p,,v])=>p+v).join("、")).join("，")+(seg.length?"。":"");
+const nbShortH=seg=>seg.map(g=>g.map(([p,c,v])=>`<span class="p ${c}">${esc(p+v)}</span>`).join("、")).join("，")+(seg.length?"。":"");
+function nbLong(){const a=npick("aud"),s=npick("sty"),c=npick("col"),f=npick("foc"),im=npick("img");const cd=ndim("col").o.find(o=>o.id===NS.col.sel);const out=[];
+  if(a)out.push(`對象為${a.L}。`);
+  if(s||c){let t="視覺採用";if(s)t+=s.L+(/[風感表）]$|排版$/.test(s.L)?"":"風格");if(s&&c)t+="，";if(c)t+=c.L+(/色/.test(c.L)?"":"配色")+(cd&&cd.c?`（${cd.c.slice(0,2).join("、")}）`:"");out.push(t+"。")}
+  if(im)out.push(im.L+"。");if(f)out.push((f.own?"內容重點：":"")+f.L+"。");return out.join("")}
+const nlen=t=>[...t.replace(/\s/g,"")].length;
+const nbCur=()=>NM==="short"?nbShort(nbParts()):nbLong();
+function renderNb(){
+  const seg=nbParts(),txt=nbCur(),el=$("nb-prompt");el.classList.toggle("long",NM==="long");
+  el.innerHTML=NM==="short"?(nbShortH(seg)||'<span class="fake">先選四個必選項</span>'):esc(txt);
+  $("nb-short").setAttribute("aria-selected",NM==="short");$("nb-long").setAttribute("aria-selected",NM==="long");
+  const n=nlen(txt),bar=$("nb-meter").querySelector("i");let c,m;
+  if(NM==="long"){c="ok";m="詳細版適合想把要求講完整的時候，字數不限。";bar.style.width="100%";bar.className=""}
+  else{bar.style.width=Math.min(100,n/40*100)+"%";if(n<=30){c="ok";m="剛好！30 字以內，重點都在。";bar.className=""}else if(n<=36){c="w";m="略長：把圖像改回「不指定」試試。";bar.className="w"}else{c="x";m="太長了：只留四個必選項，或把自填內容改短。";bar.className="x"}}
+  $("nb-meter").querySelector(".txt").innerHTML=`<span class="${c}"><b>${n}</b> 字${NM==="short"?" / 目標 30":""}</span><span class="${c}">${m}</span>`;
+  const a=npick("aud"),f=npick("foc");const who=a?a.s:"台下聽眾",how=f?f.s.replace(/^用/,""):"數據與案例";
+  NQ=[`這些資料最核心的三個結論是什麼？各用一句話說明，並標出依據的來源。`,`如果報告對象是${who}，他們最在乎哪些問題？請列出並逐一回答。`,`哪些內容最適合「${how}」？請整理成可以放進簡報的重點與數字。`];
+  $("nb-qs").innerHTML=NQ.map((q,i)=>`<li><i>Q${i+1}</i><span>${esc(q)}</span><button class="copy-one" type="button" data-q="${i}">複製</button></li>`).join("");
+  $("nb-presets").querySelectorAll("[data-p]").forEach(b=>{const v=NP[+b.dataset.p].v;b.setAttribute("aria-pressed",String(ND.every(d=>NS[d.k].sel===(v[d.k]??d.def))))});
+  if($("nb-lbl")){$("nb-lbl").textContent=txt||"先選四個必選項";$("nb-n").textContent=n+" 字"}
+}
+let NQ=[];
+$("nb-qs").addEventListener("click",e=>{const b=e.target.closest("[data-q]");if(b)copy(NQ[+b.dataset.q],b)});
+renderNbDims();
+$("nb-presets").innerHTML=[...new Set(NP.map(p=>p.g))].map(g=>`<div class="pgrp"><b>${g}</b><div class="chips">${NP.map((p,i)=>p.g!==g?"":`<button class="chip" type="button" data-p="${i}" aria-pressed="false">${p.l}</button>`).join("")}</div></div>`).join("");
+$("nb-presets").addEventListener("click",e=>{const b=e.target.closest("[data-p]");if(!b)return;const v=NP[+b.dataset.p].v;ND.forEach(d=>{NS[d.k].sel=v[d.k]??d.def;syncNb(d.k)});renderNb()});
+$("nb-dims").addEventListener("click",e=>{const b=e.target.closest(".chip");if(!b)return;const k=b.dataset.k,d=ndim(k);NS[k].sel=(NS[k].sel===b.dataset.id&&!d.req)?"":b.dataset.id;syncNb(k);renderNb()});
+$("nb-dims").addEventListener("input",e=>{const k=e.target.dataset.k;if(!k)return;NS[k].own=e.target.value;if(e.target.value.trim())NS[k].sel="own";else if(NS[k].sel==="own")NS[k].sel=ndim(k).def;syncNb(k);renderNb()});
+$("nb-dims").addEventListener("focusin",e=>{const k=e.target.dataset&&e.target.dataset.k;if(k&&NS[k].own.trim()){NS[k].sel="own";syncNb(k);renderNb()}});
+$("nb-short").onclick=()=>{NM="short";renderNb()};$("nb-long").onclick=()=>{NM="long";renderNb()};
+$("nb-rand").onclick=()=>{const r=a=>a[Math.floor(Math.random()*a.length)];ND.forEach(d=>{NS[d.k].sel=d.req?r(d.o).id:(Math.random()<.3?r(d.o).id:"")});if(nlen(nbShort(nbParts()))>30)NS.img.sel="";ND.forEach(d=>syncNb(d.k));renderNb()};
+$("nb-copy").onclick=()=>copy(nbCur(),$("nb-copy"));$("nb-go").onclick=()=>copy(nbCur(),$("nb-go"));
+if("IntersectionObserver" in window){new IntersectionObserver(es=>es.forEach(e=>$("nbar").classList.toggle("away",e.isIntersecting)),{rootMargin:"0px 0px -50% 0px"}).observe($("nb-result"))}
+renderNb();
+function showApp(v){
+  ["gen","fu","sec","nb"].forEach(k=>{$("app-"+k).setAttribute("aria-selected",k===v);$("view-"+k).hidden=k!==v});
+  document.body.dataset.view=v;
+  try{history.replaceState(null,"",v==="fu"?"#followup":v==="sec"?"#security":v==="nb"?"#notebook":location.pathname+location.search)}catch(e){}
+}
+$("app-gen").onclick=()=>showApp("gen");$("app-fu").onclick=()=>showApp("fu");$("app-sec").onclick=()=>showApp("sec");$("app-nb").onclick=()=>showApp("nb");
 $("fu-to-gen").onclick=()=>{showApp("gen");window.scrollTo({top:0})};
 document.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>{showApp(b.dataset.go);window.scrollTo({top:0})});
 renderFu();
-showApp(location.hash==="#followup"?"fu":location.hash==="#security"?"sec":"gen");
+showApp(location.hash==="#followup"?"fu":location.hash==="#security"?"sec":location.hash==="#notebook"?"nb":"gen");
 </script>
 </body>
 </html>
