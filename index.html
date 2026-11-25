@@ -422,6 +422,43 @@ body:not([data-view="gen"]) #mbar,body:not([data-view="fu"]) #fbar,body:not([dat
   .nb-qs li{grid-template-columns:auto minmax(0,1fr)}
   .nb-qs li .copy-one{grid-column:2;justify-self:start}
 }
+/* 第三輪：情境效益、追問、去識別化指令、主色工具 */
+.gain{margin-top:10px;border-radius:10px;background:var(--bg);padding:10px 12px;font-size:13.5px}
+.gain .who{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:12.5px;color:var(--muted)}
+.gain .who span{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:1px 9px;color:var(--ink)}
+.gain .ba{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.6fr);gap:8px;margin-top:8px}
+.gain .ba div{border-radius:8px;padding:8px 10px;background:var(--panel);border:1px solid var(--line)}
+.gain .ba div:last-child{border-color:var(--ok);background:var(--ap)}
+.gain .ba b{display:block;font-size:12px;color:var(--muted);letter-spacing:.06em}
+.gain .ba div:last-child b{color:var(--ok)}
+.dz-ask{margin-top:12px;padding:10px 12px;border:1.5px solid var(--g);background:var(--g-soft);border-radius:10px}
+.dz-ask textarea{min-height:64px;font-family:var(--f-body);font-size:13.5px}
+.nb-expect{margin-top:12px;padding:10px 12px;border-radius:10px;background:var(--brand-soft);font-size:13.5px}
+.nb-expect b{display:block;font-size:12px;color:var(--brand);letter-spacing:.06em;margin-bottom:2px}
+.tuner{margin-top:12px;border-top:1px dashed var(--line);padding-top:12px}
+.tsub{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;margin-bottom:10px}
+.tsub b{font-size:14px}.tsub span{font-size:12.5px;color:var(--muted)}
+.tbody{display:grid;grid-template-columns:150px minmax(0,1fr);gap:16px;align-items:center}
+.tprev{--tc:#1F3A5F;--tt:#eef2f7;position:relative;aspect-ratio:16/9;border-radius:8px;background:var(--tt);border:1px solid var(--line);overflow:hidden}
+.tprev i{position:absolute;display:block;border-radius:2px}
+.tprev .tbar{left:0;top:0;right:0;height:26%;background:var(--tc);border-radius:0}
+.tprev .tl1{left:9%;top:38%;width:50%;height:7%;background:var(--tc);opacity:.85}
+.tprev .tl2{left:9%;top:52%;width:38%;height:6%;background:var(--tc);opacity:.35}
+.tprev .tbox{right:9%;top:38%;width:26%;height:44%;background:var(--tc);opacity:.6;border-radius:4px}
+.tprev span{position:absolute;left:8%;bottom:6%;font-family:var(--f-mono);font-size:11px;color:var(--tc);font-weight:500}
+.tsl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px 10px;align-items:center}
+.tsl label{font-size:12.5px;color:var(--muted)}
+.tsl input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:14px;border-radius:999px;margin:0;cursor:pointer;border:1px solid var(--line)}
+.tsl input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:#fff;border:3px solid var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.3)}
+.tsl input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:#fff;border:3px solid var(--ink)}
+@media (max-width:720px){
+  .gain .ba{grid-template-columns:minmax(0,1fr)}
+  .tbody{grid-template-columns:minmax(0,1fr)}
+  .tprev{max-width:220px}
+  .tsl input[type=range]{height:18px}
+  .tsl input[type=range]::-webkit-slider-thumb{width:28px;height:28px}
+  .dz-ask textarea{font-size:16px}
+}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -453,13 +490,14 @@ body:not([data-view="gen"]) #mbar,body:not([data-view="fu"]) #fbar,body:not([dat
       <div class="step s0">
         <div class="step-head"><div class="badge">情</div><div><h2>選擇工作情境</h2><p>每個情境會帶出建議的角色、任務、追問與資料清單。</p></div></div>
         <div class="scen" id="scen"></div>
+        <div class="gain" id="gain" aria-live="polite"></div>
         <div class="sub">範例產業（「需補充資料」會依此提供參考範例）</div>
         <div class="chips" id="inds" role="group" aria-label="範例產業"></div>
         <div class="field" id="ind-other-wrap" style="margin-top:10px" hidden><label for="ind-other">輸入你的產業</label><input id="ind-other" placeholder="例：營建工程、物流倉儲、醫療器材"></div>
         <div class="sub">公司類型（選填，再點一次可取消）</div>
         <div class="chips" id="sizes" role="group" aria-label="公司類型"></div>
         <div class="grid2" style="margin-top:14px">
-          <div class="field"><label for="ctx-co">公司產業與營收規模（選填）</label><input id="ctx-co" placeholder="例：電子零組件製造，年營收約 30 億"></div>
+          <div class="field"><label for="ctx-co">公司產業與營收規模（選填）</label><input id="ctx-co" placeholder="例：水下聲學設備新創，年營收約 1.8 億"></div>
           <div class="field"><label for="ctx-period">資料期間（選填）</label><input id="ctx-period" placeholder="例：2026 年 9 月與 1–9 月累計"></div>
         </div>
       </div>
@@ -648,6 +686,7 @@ body:not([data-view="gen"]) #mbar,body:not([data-view="fu"]) #fbar,body:not([dat
             <div class="chips" id="dz-types" role="group" aria-label="遮蔽類型"></div>
             <div class="dz-lbl"><span>去識別化結果</span><button class="btn sm" type="button" id="dz-copy">複製結果</button></div>
             <pre class="dz-out" id="dz-out"></pre>
+            <div class="dz-ask"><div class="dz-lbl" style="margin-top:0"><b>去識別化後，可以這樣請 AI 幫忙</b><button class="btn sm" type="button" id="dz-copy3">複製指令＋結果</button></div><textarea id="dz-askt" spellcheck="false" style="min-height:64px" aria-label="給 AI 的指令"></textarea></div>
             <div class="warnbox" id="dz-warn">自動偵測抓不到所有東西：計畫編號、學號、場地位置、測試合作對象、少見的人名，請自己加進上方欄位，並從頭到尾再讀一遍。</div>
             <div id="dz-mapwrap">
               <div class="dz-lbl">編碼表（只留在本機，不要上傳）</div>
@@ -683,6 +722,7 @@ body:not([data-view="gen"]) #mbar,body:not([data-view="fu"]) #fbar,body:not([dat
         <div class="step s0">
           <div class="step-head"><div class="badge">情</div><div><h2>一鍵套用情境</h2><p>依進駐廠商、海科處同仁、新創團隊的常見簡報挑選，套用後還能再調整。</p></div></div>
           <div id="nb-presets"></div>
+          <div class="nb-expect" id="nb-expect" hidden></div>
         </div>
         <div id="nb-dims" class="builder"></div>
       </section>
@@ -729,56 +769,56 @@ body:not([data-view="gen"]) #mbar,body:not([data-view="fu"]) #fbar,body:not([dat
 
 <script>
 const SCEN = [
- {id:"bva",name:"預算差異分析",desc:"預算 vs 實際，找出原因",skill:"擅長預算編製、差異分析與管理報告",
+ {id:"bva",who:"行政會計、財務主管、總經理",gain:["整理差異表、寫說明要半天","貼上預算與實際數，10 分鐘拿到前三大差異原因和給主管的說明初稿，你只要核對數字"],name:"預算差異分析",desc:"預算 vs 實際，找出原因",skill:"擅長預算編製、差異分析與管理報告",
   bad:"幫我分析這個月的預算差異。",
   roles:["資深財務分析師（FP&A）","預算控制主管","財務長（CFO）"],
   tasks:["找出差異超過門檻的科目並依金額排序","拆解差異原因（價格、數量、時間性）","區分可控與不可控因素","提出改善做法或預算修正建議","撰寫給主管的差異說明摘要"],
   def:[0,1],
   follow:["只看前三大差異，對全年預測的影響是多少？","哪些差異屬於時間性差異，下個月會自然回沖？","請把差異說明改寫成給非財務主管看的版本。","請列出需要向業務、採購部門確認的問題清單。","如果這個趨勢持續到年底，請模擬樂觀、基本、悲觀三種情境。"],
   needs:[["預算數與實際數","科目、期間、金額；最好附上去年同期"],["差異門檻","例如 ±10% 或 ±50 萬，AI 才知道哪些值得說明"],["已知的特殊事件","調價、一次性費用、專案延後等，避免 AI 誤判"],["主要成本結構","哪些是變動成本、哪些是固定成本"]]},
- {id:"close",name:"月結與財報摘要",desc:"損益重點、比率、管理報告",skill:"熟悉月結作業、財務報表分析與管理層報告撰寫",
+ {id:"close",who:"行政會計、經理、總經理",gain:["月結完還要另外寫管理報告","貼上損益表，馬上拿到重點摘要、比率分析和給總經理的三句話結論"],name:"月結與財報摘要",desc:"損益重點、比率、管理報告",skill:"熟悉月結作業、財務報表分析與管理層報告撰寫",
   bad:"幫我整理這個月的財報重點。",
   roles:["會計主管","財務長（CFO）","投資人關係（IR）經理"],
   tasks:["摘要本月損益的關鍵變化","計算毛利率、營益率、費用率並與上月及去年同期比較","標示波動異常的科目","撰寫管理層報告的文字說明","產出一頁式簡報大綱"],
   def:[0,1],
   follow:["這些指標和同業平均相比如何？請說明你參考的口徑。","如果會議只有五分鐘，哪三個數字最該報告？","請用董事會簡報的語氣重寫結論。","主管最可能追問哪些問題？請先準備好回答。","根據本月數字，下一季最需要注意的風險是什麼？"],
   needs:[["損益表與資產負債表","本期、上期、去年同期三期並列最好"],["幣別與金額單位","避免 AI 把千元當成元"],["本月重大事件","新客戶、停產、匯率大幅波動等"],["公司慣用的報告格式","有範本就貼上，AI 會照著排"]]},
- {id:"cash",name:"現金流預測",desc:"13 週資金預測與缺口",skill:"專精資金調度、13 週現金流預測與銀行融資",
+ {id:"cash",who:"總經理、行政會計、行政助理",gain:["看帳戶餘額猜下個月夠不夠","列出收付款時程，產出 13 週現金流表，提早看到哪一週會缺錢、要不要動用額度"],name:"現金流預測",desc:"13 週資金預測與缺口",skill:"專精資金調度、13 週現金流預測與銀行融資",
   bad:"幫我做現金流預測。",
   roles:["資金管理專家（Treasury）","資深財務分析師（FP&A）","財務長（CFO）"],
   tasks:["建立未來 13 週現金流預測的架構","預估各週收款與付款時點","找出可能出現資金缺口的週次","提出融資或資金調度方案","設計收款延遲的敏感度分析"],
   def:[0,2],
   follow:["如果最大客戶延遲 30 天付款，缺口會出現在哪一週？","以我們的規模，最低安全現金水位設多少比較合理？","比較短期借款和延長應付帳款兩種做法的成本與風險。","請把這個預測轉成 Excel 公式與欄位結構。","哪三個假設對結果影響最大？"],
   needs:[["期初現金餘額","各銀行帳戶合計即可"],["應收帳款帳齡與收款條件","主要客戶的付款天數與歷史準時率"],["固定支出時程","薪資、租金、稅款、貸款本息的日期與金額"],["已知的資本支出","設備採購、裝修等大額支出"],["可動用的銀行額度","額度、利率與到期日"]]},
- {id:"audit",name:"費用稽核與異常",desc:"報銷檢查、異常偵測",skill:"專長費用稽核、內部控制與舞弊風險辨識",
+ {id:"audit",who:"行政會計、行政助理、計畫承辦",gain:["一張張翻報帳單找問題","貼上去識別化明細，自動標出重複報帳、超過限額、缺憑證和補助計畫混列的項目"],name:"費用稽核與異常",desc:"報銷檢查、異常偵測",skill:"專長費用稽核、內部控制與舞弊風險辨識",
   bad:"幫我看看這些費用有沒有問題。",
   roles:["內部稽核師","鑑識會計師","會計主管"],
   tasks:["依公司費用政策逐筆檢查明細","找出重複報銷、拆單、超過限額等異常","依風險高低排序","說明每筆異常的判斷理由","建議後續查核程序"],
   def:[1,3],
   follow:["要確認這幾筆異常，還需要補哪些憑證？","請把這些判斷規則轉成 Excel 篩選或公式。","請設計一份每月可重複使用的自動檢核清單。","這些判斷有哪些可能是誤判？請說明情境。","請寫一段委婉的說明，通知當事人補件。"],
   needs:[["去識別化的費用明細","日期、類別、金額、事由；姓名改成代號"],["費用報銷政策與核決權限","限額、需檢附的單據、簽核層級"],["檢查期間與部門範圍","避免 AI 把跨期資料混在一起"],["過去發生過的異常樣態","讓 AI 知道要特別留意什麼"]]},
- {id:"ar",name:"應收帳款催收",desc:"催收信、話術、分期方案",skill:"擅長應收帳款管理與兼顧客戶關係的商務溝通",
+ {id:"ar",who:"行政會計、業務、育成承辦",gain:["不知道催款信怎麼寫才不傷感情","依逾期天數和合作關係，產出三種語氣的催收信和電話話術"],name:"應收帳款催收",desc:"催收信、話術、分期方案",skill:"擅長應收帳款管理與兼顧客戶關係的商務溝通",
   bad:"幫我寫一封催款信。",
   roles:["應收帳款主管","客戶關係經理","商務書信專家"],
   tasks:["撰寫第一次友善的付款提醒","撰寫逾期 60 天的正式催告","說明可提供的分期付款方案","同時提供中文與英文版本","準備電話催收時的說話重點"],
   def:[0],
   follow:["請把語氣調得更堅定，但仍保留合作關係。","如果客戶回覆資金周轉困難，我該怎麼回？","請濃縮成一則適合用 LINE 或簡訊傳的訊息。","若再逾期 30 天，內部應如何升級處理？","請改寫成英文，收件人是對方財務長。"],
   needs:[["客戶代號與往來關係","合作年資、重要程度"],["發票號碼、金額、到期日","逾期天數也一併寫上"],["付款條件與過去付款紀錄","是首次逾期還是常態"],["公司可接受的讓步","能否分期、減免利息、延長幾天"],["寄件人職稱與署名","決定信件的正式程度"]]},
- {id:"capex",name:"投資案評估",desc:"NPV、IRR、回收期",skill:"專精資本預算、評價模型與投資決策分析",
+ {id:"capex",who:"總經理、技術總監、專案副理",gain:["買設備還是租，只能憑感覺","算出 NPV、IRR、回收年限，並比較自購和租用兩種方案的風險"],name:"投資案評估",desc:"NPV、IRR、回收期",skill:"專精資本預算、評價模型與投資決策分析",
   bad:"這個投資案值得做嗎？",
   roles:["投資分析師","企業財務顧問","財務長（CFO）"],
   tasks:["計算 NPV、IRR 與回收期","列出所有關鍵假設","進行折現率與營收的敏感度分析","評估風險與非財務因素","提出是否投資的建議並說明理由"],
   def:[0,1,4],
   follow:["折現率上下各調 2%，結論會改變嗎？","在最悲觀的情境下，最大損失是多少？","如果改用租賃取代購買，結果有什麼不同？","請整理成給董事會的一頁摘要。","我的現金流估計可能漏掉哪些成本？"],
   needs:[["初始投資金額與時點","含安裝、教育訓練等附帶成本"],["各年度預估現金流入與流出","至少涵蓋專案年限"],["折現率或 WACC","公司內部要求的報酬率"],["專案年限與殘值","設備可用幾年、期末能賣多少"],["稅率與折舊方法","直線法或其他方法"]]},
- {id:"tax",name:"稅務與法規解讀",desc:"白話說明、適用判斷",skill:"熟悉台灣營所稅、營業稅、扣繳與相關函釋",
+ {id:"tax",who:"行政會計、總經理",gain:["法條看不懂，又不好意思一直問會計師","把補助款、研發抵減等規定翻成白話，再列出要問會計師的問題清單"],name:"稅務與法規解讀",desc:"白話說明、適用判斷",skill:"熟悉台灣營所稅、營業稅、扣繳與相關函釋",
   bad:"這條稅法是什麼意思？",
   roles:["稅務顧問","會計師（CPA）","法遵專員"],
   tasks:["用白話解釋這項規定","判斷本公司的情況是否適用","列出需準備的文件與申報期限","比較不同處理方式的稅負差異","提醒常見錯誤與罰則"],
   def:[0,1],
   follow:["請列出你引用的法條與條次，方便我自行核對。","這項規定近兩年是否有修正？","如果交易金額超過門檻，處理方式會有什麼不同？","請整理我要請教簽證會計師的問題清單。","請寫一份給業務同仁的內部宣導說明。"],
   needs:[["適用地區與年度","法規每年可能不同"],["公司組織型態與產業","股份有限公司、分公司、外商等"],["具體交易內容","交易對象、金額、時間、合約條件"],["你已知的法條或函釋","有的話貼上，AI 比較不會亂引用"]]},
- {id:"excel",name:"Excel 公式與自動化",desc:"公式、樞紐、Power Query",skill:"精通 Excel 財務建模、Power Query 與 VBA",
+ {id:"excel",who:"行政助理、專員、工程師",gain:["每月手動複製貼上一整天","描述欄位和想要的結果，拿到可以直接用的公式或 Power Query 步驟"],name:"Excel 公式與自動化",desc:"公式、樞紐、Power Query",skill:"精通 Excel 財務建模、Power Query 與 VBA",
   bad:"幫我寫一個 Excel 公式。",
   roles:["Excel 財務建模專家","Power Query / VBA 工程師","財務系統顧問"],
   tasks:["寫出公式並逐段解釋","把重複的手動作業改成自動化流程","設計清楚易讀的報表版面","找出現有公式的錯誤並修正","撰寫可重複執行的 VBA 巨集"],
@@ -803,7 +843,7 @@ const METHODS=[
  {id:"tw",name:"台灣用語",text:"請使用繁體中文與台灣財會慣用語。",tip:"<b>台灣用語</b>：避免出現「營收」與「營業收入」混用，或中國大陸用語。"},
 ];
 
-const IND=[{id:"mfg",name:"傳統製造"},{id:"trade",name:"外貿"},{id:"tech",name:"科技業"},{id:"inst",name:"電子儀器"},{id:"food",name:"連鎖餐飲"},{id:"apparel",name:"服飾品牌"},{id:"health",name:"保健品牌"},{id:"local",name:"地方商家"},{id:"other",name:"其他"}];
+const IND=[{id:"ocean",name:"海洋科技"},{id:"mfg",name:"傳統製造"},{id:"trade",name:"外貿"},{id:"tech",name:"科技業"},{id:"inst",name:"電子儀器"},{id:"food",name:"連鎖餐飲"},{id:"apparel",name:"服飾品牌"},{id:"health",name:"保健品牌"},{id:"local",name:"地方商家"},{id:"other",name:"其他"}];
 // 需補充資料的參考範例：依情境的 needs 順序排列；all 代表三種產業共用。公司與數字皆為虛構。
 const EX={
  bva:[
@@ -983,6 +1023,58 @@ const EXG={
 };
 // 其餘產業的範例，依產業整理（同一家虛構公司在各情境的數字前後一致），載入時併入 EX 與 EXG。
 const EX2={
+ ocean:{
+  bva:[`科目｜9月預算｜9月實際｜去年同期（新台幣千元）
+營業收入｜16,000｜13,200｜11,800
+材料與外購零件｜5,600｜5,050｜4,300
+海上作業與船租｜1,800｜2,460｜1,500
+研發人事｜4,200｜4,350｜3,600
+推銷及管理費用｜2,300｜2,180｜2,050
+政府補助收入｜1,000｜1,000｜600`,
+   "差異超過 ±10% 或 50 萬元需說明；補助計畫相關科目不論金額都要說明。",
+   "東北季風提前，離岸風場基樁檢測有 3 天海上作業延到 10 月，營收遞延約 280 萬元；原本的工作船進塢，改租備援船，日租金高 35%；聲納換能器的進口晶片漲價 8%。",
+   "材料與外購零件約占營收 35%、海上作業與船租依案件發生，屬變動成本；研發人事約占 27%，以固定為主；補助收入依計畫期程認列。"],
+  close:[`（新台幣千元）｜2026/9｜2026/8｜2025/9
+營業收入｜13,200｜15,600｜11,800
+營業毛利｜5,690｜6,700｜6,000
+營業費用｜6,530｜6,100｜5,650
+營業利益｜-840｜600｜350
+政府補助收入｜1,000｜1,000｜600
+現金（月底）｜42,600｜45,100｜28,300`,
+   "新台幣千元；聲納模組銷售與水下檢測服務營收分開列示，補助收入列營業外收入。",
+   "9 月東北季風提前，海上檢測延期；8 月完成港區水下結構檢測驗收；今年 3 月完成種子輪募資 3,000 萬元。"],
+  cash:["10/5 合計 4,260 萬元（臺灣企銀 3,100 萬、土地銀行 1,160 萬）。",
+   "離岸風電運維客戶月結 60 天，未收 1,850 萬元；港務與研究單位驗收後 30–45 天付款，未收 620 萬元；海洋產業補助第二期款 300 萬元預計 12 月撥付。",
+   "每月 5 日薪資與勞健保約 520 萬元；每月 1 日育成進駐費與實驗場地費 18 萬元；船租依出海天數月結 30 天，10 月約 250 萬元；11/15 繳 9–10 月營業稅約 60 萬元。",
+   "11 月採購聲納換能器晶片 680 萬元（下單預付 30%）。",
+   "銀行信用額度 2,000 萬元（未動用），利率約 2.9%；可另申請中小企業信保融資。"],
+  audit:[`日期｜員工代號｜部門｜類別｜金額｜事由
+9/03｜M05｜海上作業組｜燃油費｜18,600｜工作船加油（僅收據）
+9/03｜M05｜海上作業組｜燃油費｜18,600｜工作船加油
+9/12｜R02｜研發部｜耗材｜6,480｜電子零件網購
+9/18｜M08｜海上作業組｜誤餐費｜3,200｜出海 8 人便當
+9/25｜A01｜管理部｜交通費｜1,490｜高鐵左營－台中（補助計畫期中審查）`,
+   "單筆 2 萬元以下由部門主管核准；燃油費需附加油明細與出海紀錄；誤餐費每人每餐 120 元為上限；補助計畫支出需另標計畫編號。",
+   "2026 年 7 到 9 月，研發部與海上作業組共 236 筆。",
+   "曾有燃油收據重複報帳；也曾把公司自有支出混進補助計畫，期中查核被要求剔除。"],
+  ar:["客戶 K（離岸風場運維公司），合作 2 年，年交易額約 6,000 萬元。",
+   "發票 XY-87654321，水下基樁檢測服務款 1,850 萬元，到期日 2026/9/30，已逾期 25 天。",
+   "過去都在到期後 10 天內付款；這次對方說在等風場業主驗收。",
+   "可接受 11/15 前分兩期付清，第一期至少 900 萬元。",
+   "財務經理（兼行政主管）"],
+  capex:["自購一艘小型工作船並改裝 ROV 收放吊架：船體 1,600 萬元、改裝 400 萬元，2027 年 3 月啟用。",
+   "目前每年船租約 1,800 萬元；自有船每年可省船租約 900 萬元（旺季仍要租船），另增船員與保養費每年 380 萬元。",
+   "公司要求報酬率 12%","使用 10 年；期末殘值 200 萬元。","營所稅 20%，直線法折舊；已申請海洋產業設備補助 30%，尚未核定。"],
+  tax:["中華民國（台灣），2026 年度。","股份有限公司，非公開發行，進駐大學育成中心，研發費用約占營收 30%。",
+   "今年拿到兩筆政府補助（研發補助 500 萬元、設備補助申請中），想確認補助款何時認列收入、要不要課營所稅；另外研發人事與材料能不能適用研究發展支出投資抵減。",
+   "產業創新條例第 10 條、所得稅法第 24 條（請 AI 協助核對條次與最新函釋）。"],
+  excel:["Microsoft 365",`日期｜案件編號｜作業類別｜出海時數｜船租(元)｜人員數
+2026/09/03｜OW-0912｜基樁檢測｜9.5｜162,000｜6
+2026/09/10｜PT-0907｜港區水下巡檢｜6.0｜98,000｜4
+2026/09/18｜OW-0912｜基樁檢測｜10.0｜170,000｜8`,
+   "依案件彙總出海時數、船租與人力，算出每案每小時成本，並標出超過報價成本的案件。",
+   "出海紀錄由不同同事填在不同 Excel，月底要花一整天對帳。"]
+ },
  inst:{
   bva:[`科目｜9月預算｜9月實際｜去年同期（新台幣千元）
 營業收入｜275,000｜251,300｜262,400
@@ -1246,24 +1338,28 @@ O260916-0042｜2026/09/16｜M10234｜官網｜膠原蛋白飲｜2,400`,
 };
 Object.entries(EX2).forEach(([ind,m])=>Object.entries(m).forEach(([sc,arr])=>arr.forEach((v,i)=>{EX[sc][i][ind]=v})));
 Object.assign(EXG.co,{
+ ocean:"水下聲學與海洋監測設備新創（虛構），進駐大學育成中心，股份有限公司（非公開發行），年營收約 1.8 億元，員工 38 人；產品為聲納感測模組與 ROV 水下檢測服務，客戶為離岸風電、港務與研究單位，部分研發來自政府補助計畫。",
  inst:"量測儀器製造商（虛構，示波器與電源供應器），上櫃公司，年營收約 32 億元，員工 900 人，外銷約 65%，關鍵晶片多為進口。",
  food:"連鎖火鍋與茶飲品牌（虛構），上櫃公司，直營 85 家、加盟 40 家，年營收約 52 億元，員工約 4,800 人（含兼職）。",
  apparel:"自有服飾品牌（虛構，女裝與休閒服），上市公司，門市 120 家並經營官網電商，年營收約 38 億元，委託越南、柬埔寨代工。",
  health:"保健食品品牌（虛構，益生菌、魚油、膠原蛋白），非公開發行，年營收約 15 億元，委外代工，以電商與藥妝通路銷售。",
  local:"台南在地烘焙伴手禮店（虛構），有限公司，3 家門市加網購，年營收約 6,800 萬元，員工 45 人，旺季為中秋與春節。"});
 Object.assign(EXG.period,{
+ ocean:"2026 年 9 月單月（含東北季風提前影響）與 1–9 月累計；新台幣千元。",
  inst:"2026 年 9 月單月與 1–9 月累計；新台幣千元，外幣依月底匯率換算。",
  food:"2026 年 9 月單月（含 2 天颱風影響）與 1–9 月累計；新台幣千元。",
  apparel:"2026 年 9 月單月與秋冬季（8–10 月）累計；新台幣千元。",
  health:"2026 年 9 月單月（含 99 購物節）與 1–9 月累計；新台幣千元。",
  local:"2026 年 9 月單月（含中秋檔期）；新台幣千元。"});
 Object.assign(EXG.rel,{
+ ocean:"對方是合作 2 年的離岸風場運維公司，是今年最大客戶，後續還有 3 座風場的檢測標案。",
  inst:"對方是合作 6 年的海外代理商，負責美國大學與研究機構市場。",
  food:"對方是合作 4 年的加盟主，經營 3 家加盟店。",
  apparel:"對方是合作 10 年的百貨通路，掌握年度櫃位分配。",
  health:"對方是主要藥妝通路，約占營收 18%，議價能力強。",
  local:"對方是在地企業福委會，每年中秋與春節固定團購。"});
 Object.assign(EXG.gaap,{
+ ocean:"非公開發行公司，適用企業會計準則公報（EAS）；政府補助依 EAS 第 13 號處理。",
  inst:"上櫃公司，適用我國 IFRS 會計準則（TIFRS）。",
  food:"上櫃公司，適用 TIFRS；加盟金依 IFRS 15 認列。",
  apparel:"上市公司，適用 TIFRS。",
@@ -1274,8 +1370,8 @@ Object.assign(EXG.gaap,{
 const pickEx=o=>o?(o[S.ind==="other"?"mfg":S.ind]||o.all||""):"";
 const indName=()=>S.ind==="other"?(S.indOther.trim()||"你的產業"):IND.find(d=>d.id===S.ind).name;
 
-const SIZES=["上市櫃公司","興櫃公司","大型企業","外商公司","中小企業","政府或法人機構"];
-const S={size:-1,ind:"mfg",indOther:"",applied:new Set(),scen:"bva",role:0,roleCustom:"",levels:new Set([0]),tasks:new Set([0,1]),taskCustom:"",aud:0,fmt:1,len:1,methods:new Set(["cot","assume","tw"]),lastMethod:"cot",co:"",period:"",done:new Set()};
+const SIZES=["上市櫃公司","興櫃公司","大型企業","外商公司","中小企業","育成進駐新創","政府或法人機構"];
+const S={size:-1,ind:"ocean",indOther:"",applied:new Set(),scen:"bva",role:0,roleCustom:"",levels:new Set([0]),tasks:new Set([0,1]),taskCustom:"",aud:0,fmt:1,len:1,methods:new Set(["cot","assume","tw"]),lastMethod:"cot",co:"",period:"",done:new Set()};
 const $=id=>document.getElementById(id);
 const esc=s=>s.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
 const cur=()=>SCEN.find(s=>s.id===S.scen);
@@ -1374,7 +1470,8 @@ function renderResult(){
   $("needs").querySelectorAll("[data-apply]").forEach(b=>b.onclick=()=>{toggle(S.applied,nl[+b.dataset.apply].k);renderResult()});
 }
 
-function update(){renderBuilder();renderResult()}
+function renderGain(){const sc=cur();$("gain").innerHTML=`<div class="who">適合：${sc.who.split("、").map(w=>`<span>${w}</span>`).join("")}</div><div class="ba"><div><b>原本</b>${sc.gain[0]}</div><div><b>用 AI</b>${sc.gain[1]}</div></div>`}
+function update(){renderBuilder();renderResult();renderGain()}
 function renderBar(){
   const a=!!roleText(),t=taskList().length>0,m=methodList().length>0;
   $("mb-a").classList.toggle("on",a);$("mb-t").classList.toggle("on",t);$("mb-m").classList.toggle("on",m);
@@ -1424,6 +1521,8 @@ const FU_TASKS=[
  {id:"ar",name:"應收帳款催收",topic:"應收帳款催收信",concept:"應收帳款週轉天數",role:"應收帳款主管",wrong:["很明顯催收信語氣越強硬，客戶就越快付款，對吧？","很明顯合作很久的老客戶逾期，不用太擔心，對吧？"],objection:"語氣太客氣，客戶不會當一回事"},
  {id:"tax",name:"稅務與法規解讀",topic:"稅務法規解讀",concept:"暫時性差異與遞延所得稅",role:"稅務顧問",wrong:["很明顯只要有發票，所有費用都可以全額列報，對吧？","很明顯交際費沒有列支上限，對吧？"],objection:"引用的法條可能已經修正過"},
  {id:"excel",name:"Excel 公式與自動化",topic:"Excel 公式",concept:"樞紐分析表的運作原理",role:"Excel 財務建模專家",wrong:["很明顯 VLOOKUP 一定比 XLOOKUP 好用，對吧？","很明顯 IF 疊越多層，判斷就越準確，對吧？"],objection:"公式太複雜，換人就沒辦法維護"},
+ {id:"grant",name:"補助計畫經費",topic:"補助計畫的經費編列與核銷",concept:"補助款的收入認列與經費流用規定",role:"政府補助計畫財務顧問",wrong:["很明顯補助款一入帳就可以全部認列收入，對吧？","很明顯同一張發票可以同時報補助計畫和公司費用，對吧？"],objection:"沒分清楚計畫經費和公司自有支出，核銷時容易被剔除"},
+ {id:"fund",name:"募資財務預測",topic:"募資簡報的財務預測",concept:"營收預測假設與現金跑道（runway）",role:"新創募資顧問",wrong:["很明顯營收預測越樂觀越容易拿到投資，對吧？","很明顯有補助款就不用算現金還能撐幾個月，對吧？"],objection:"營收假設沒有依據，也沒算現金能撐多久"},
  {id:"custom",name:"自訂主題"}
 ];
 const FU_TECHS=[
@@ -1591,7 +1690,7 @@ const DT=[
 const CO_PRE=/^.*(?:客戶|供應商|廠商|團隊|本校|本處|貴|致|與|和|及|向|給|由|對|的|是|為|請|跟)/;
 const DZ={mode:"full",off:new Set()};
 const CASES=[
- {id:"tenant",name:"進駐廠商",sub:"進駐費與場地費催繳",desc:"育成組寄給同仁的內部信，含廠商、窗口、負責人與匯款資料。",names:"林志豪、黃淑芬、林大偉",kw:"B 棟 203 室",
+ {id:"tenant",ask:"請根據下面的內容，幫我寫一封給進駐廠商窗口的繳費提醒信：語氣客氣但明確，列出欠款項目與繳費期限，最後再附一段電話提醒的話術。",name:"進駐廠商",sub:"進駐費與場地費催繳",desc:"育成組寄給同仁的內部信，含廠商、窗口、負責人與匯款資料。",names:"林志豪、黃淑芬、林大偉",kw:"B 棟 203 室",
   text:`主旨：藍潮海洋科技股份有限公司（統編：24681357）進駐費逾期提醒
 
 育成組同仁您好：
@@ -1599,7 +1698,7 @@ const CASES=[
 窗口林志豪（0933-218-765，lin.zh@bluetide-tech.com.tw）表示月底前會匯入本校土地銀行帳戶 041-001-234567。
 請黃淑芬協助確認：若再逾期，是否依進駐契約第 12 條通知負責人林大偉（身分證 S123456789）。`,
   demo:"建議由人員B先寄正式提醒給人員A，列出公司A尚欠的[金額-1]與[金額-2]，並給 14 天繳納期限；逾期再依契約通知人員C。"},
- {id:"startup",name:"新創團隊",sub:"補助計畫申請資料",desc:"新創團隊準備申請補助，含未申請專利的技術、測試對象與撥款帳戶。",names:"陳冠宇、蔡佳穎",kw:"多波束聲納即時降噪演算法、高雄港一家漁具廠",
+ {id:"startup",ask:"請根據下面的內容，扮演補助計畫審查委員，列出你最可能追問的 5 個問題，並檢查補助款與自籌款的比例是否合理。",name:"新創團隊",sub:"補助計畫申請資料",desc:"新創團隊準備申請補助，含未申請專利的技術、測試對象與撥款帳戶。",names:"陳冠宇、蔡佳穎",kw:"多波束聲納即時降噪演算法、高雄港一家漁具廠",
   text:`主旨：深藍感測有限公司 申請海洋產業創新補助計畫資料確認
 
 您好，我們是進駐海科處的新創團隊深藍感測有限公司（統編：90817263）。
@@ -1607,7 +1706,7 @@ const CASES=[
 計畫主持人陳冠宇（身分證 E124681357，0918-660-245），財務聯絡人蔡佳穎（tsai.cy@deepblue-sense.tw）。
 撥款帳戶：第一銀行 181-10-0123456。`,
   demo:"計畫書可把[關鍵字-1]寫成技術亮點，但專利申請前只描述效益、不寫演算法細節；與[關鍵字-2]的測試可改寫成「在地漁具業者實測 3 次」。請人員A確認[金額-1]與[金額-2]的配比符合規定。"},
- {id:"admin",name:"行政教職",sub:"產學計畫經費核銷",desc:"海科處同仁寄給計畫主持老師的信，含合作廠商、學生助理個資與帳戶。",names:"張雅婷、吳承恩、鄭文傑",kw:"OT-2026-018、C112408017",
+ {id:"admin",ask:"請根據下面的內容，幫我回覆老師：條列還缺哪些核銷文件與期限，再寫一段提醒助理補件的 LINE 訊息。",name:"行政教職",sub:"產學計畫經費核銷",desc:"海科處同仁寄給計畫主持老師的信，含合作廠商、學生助理個資與帳戶。",names:"張雅婷、吳承恩、鄭文傑",kw:"OT-2026-018、C112408017",
   text:`主旨：產學合作計畫 OT-2026-018 經費核銷與兼任助理資料
 
 張雅婷老師您好：
@@ -1615,12 +1714,12 @@ const CASES=[
 目前核銷尚缺：兼任助理吳承恩（學號 C112408017，身分證 E223456789）10 月助理費 6,000 元的領據，以及耗材發票一張 18,350 元。
 助理費將撥入其郵局帳戶 0021-0345-1234567，若有問題請回電 07-555-0188 分機 2501 找鄭文傑。`,
   demo:"建議回覆人員A：公司A的[金額-1]已入帳；請人員B補上[金額-2]領據，[金額-3]耗材發票需註明計畫編號[關鍵字-1]，再交給人員C彙整。"},
- {id:"own",name:"自己的文字",sub:"貼上要處理的內容",desc:"貼上你的文字，並在下方填入人名與關鍵字。紅燈資料請不要貼。",names:"",kw:"",text:"",demo:""}];
+ {id:"own",ask:"請根據下面的內容，幫我",name:"自己的文字",sub:"貼上要處理的內容",desc:"貼上你的文字，並在下方填入人名與關鍵字。紅燈資料請不要貼。",names:"",kw:"",text:"",demo:""}];
 DZ.c="tenant";
 function renderCases(){$("dz-cases").innerHTML=CASES.map(c=>`<button type="button" data-c="${c.id}" aria-pressed="${DZ.c===c.id}"><strong>${c.name}</strong><span>${c.sub}</span></button>`).join("");
   $("dz-cases").querySelectorAll("button").forEach(b=>b.onclick=()=>pickCase(b.dataset.c));
   const c=CASES.find(x=>x.id===DZ.c);$("dz-desc").textContent=c.desc;}
-function pickCase(id){DZ.c=id;const c=CASES.find(x=>x.id===id);$("dz-in").value=c.text;$("dz-names").value=c.names;$("dz-kw").value=c.kw;DZ.off.clear();renderCases();runDz()}
+function pickCase(id){DZ.c=id;const c=CASES.find(x=>x.id===id);$("dz-in").value=c.text;$("dz-names").value=c.names;$("dz-kw").value=c.kw;$("dz-askt").value=c.ask;DZ.off.clear();renderCases();runDz()}
 function splitList(s){return s.split(/[、,，;；\n]+/).map(x=>x.trim()).filter(x=>x.length>=2)}
 function findSpans(text){
   const spans=[];const taken=new Uint8Array(text.length);
@@ -1670,7 +1769,7 @@ function setMode(m){DZ.mode=m;$("dz-full").setAttribute("aria-pressed",m==="full
 $("dz-full").onclick=()=>setMode("full");$("dz-part").onclick=()=>setMode("part");
 $("dz-clear").onclick=()=>pickCase("own");
 ["dz-in","dz-names","dz-kw"].forEach(id=>$(id).oninput=runDz);
-$("dz-copy").onclick=()=>copy(DZ.out||"",$("dz-copy"));
+$("dz-copy").onclick=()=>copy(DZ.out||"",$("dz-copy"));$("dz-copy3").onclick=()=>copy($("dz-askt").value.trim()+"\n\n"+(DZ.out||""),$("dz-copy3"));
 function renderSbar(){if(!$("sb-lbl"))return;const n=Object.keys(QA).length;const c=$("cl").querySelectorAll("input:checked").length;$("sb-lbl").textContent=`練習 ${n}/${QZ.length}・檢查 ${c}/12`}
 $("sb-go").onclick=()=>$("sec-result").scrollIntoView({behavior:"smooth",block:"start"});
 if("IntersectionObserver" in window){
@@ -1723,23 +1822,34 @@ const ND=[
      {id:"3d",l:"3D 立體",s:"配3D圖示",L:"圖像使用 3D 立體圖示"},
      {id:"hand",l:"手繪插圖",s:"配手繪插圖",L:"圖像使用手繪插圖"}]}];
 const NP=[
- {g:"進駐廠商｜財務會計",l:"月結損益給總經理",v:{aud:"boss",sty:"biz",col:"navy",foc:"concl"}},
- {g:"進駐廠商｜財務會計",l:"年度預算給董事會",v:{aud:"board",sty:"consult",col:"bw",foc:"data"}},
- {g:"進駐廠商｜財務會計",l:"募資簡報給投資人",v:{aud:"vc",sty:"tech",col:"ocean",foc:"prob"}},
- {g:"海科處｜行政同仁",l:"育成成果給主管",v:{aud:"head",sty:"dash",col:"ocean",foc:"data"}},
- {g:"海科處｜行政同仁",l:"計畫期末審查",v:{aud:"jury",sty:"gov",col:"navy",foc:"frame"}},
- {g:"海科處｜行政同仁",l:"進駐招商說明會",v:{aud:"tenant",sty:"flat",col:"ocean",foc:"action"}},
- {g:"新創｜學生團隊",l:"ROV 競賽提案",v:{aud:"judge",sty:"tech",col:"bluepurple",foc:"story"}},
- {g:"新創｜學生團隊",l:"技術成果說給總經理",v:{aud:"boss",sty:"mini",col:"earth",foc:"plain"}},
- {g:"業務｜產品行銷",l:"新品提案給通路",v:{aud:"client",sty:"mag",col:"orange",foc:"prob"}},
- {g:"業務｜產品行銷",l:"業績檢討給團隊",v:{aud:"team",sty:"dash",col:"moran",foc:"compare"}}];
+ {g:"進駐廠商｜財務會計",l:"月結損益給總經理",out:"約 8 頁：第一頁三句結論，接著營收與毛利趨勢、費用變化，最後一頁是需要總經理決定的事。",v:{aud:"boss",sty:"biz",col:"navy",foc:"concl"}},
+ {g:"進駐廠商｜財務會計",l:"年度預算給董事會",out:"預算總表、各部門預算與去年比較、主要假設與風險，最後一頁列出請董事會核准的事項。",v:{aud:"board",sty:"consult",col:"bw",foc:"data"}},
+ {g:"進駐廠商｜財務會計",l:"募資簡報給投資人",out:"市場痛點、解決方案、商業模式、三年營收預測，最後是募資金額與資金用途。",v:{aud:"vc",sty:"tech",col:"ocean",foc:"prob"}},
+ {g:"海科處｜行政同仁",l:"育成成果給主管",out:"進駐家數、廠商營收與募資成長、媒合件數的 KPI 儀表板，加上兩個亮點廠商故事。",v:{aud:"head",sty:"dash",col:"ocean",foc:"data"}},
+ {g:"海科處｜行政同仁",l:"計畫期末審查",out:"計畫目標與達成情形對照表、經費執行率、成果佐證，最後是後續推廣規劃。",v:{aud:"jury",sty:"gov",col:"navy",foc:"frame"}},
+ {g:"海科處｜行政同仁",l:"進駐招商說明會",out:"可用的場地、設備、輔導與補助資源，申請流程與時程、常見問題，最後是報名方式。",v:{aud:"tenant",sty:"flat",col:"ocean",foc:"action"}},
+ {g:"新創｜學生團隊",l:"ROV 競賽提案",out:"要解決的海洋問題、ROV 設計與技術亮點、水池與海上測試結果、團隊分工與預算。",v:{aud:"judge",sty:"tech",col:"bluepurple",foc:"story"}},
+ {g:"新創｜學生團隊",l:"技術成果說給總經理",out:"用生活化比喻說明技術在做什麼，再換算成可以帶來多少營收或省下多少成本。",v:{aud:"boss",sty:"mini",col:"earth",foc:"plain"}},
+ {g:"業務｜產品行銷",l:"新品提案給通路",out:"產品賣點、目標客群、建議售價與毛利結構，最後是上架與行銷支援方案。",v:{aud:"client",sty:"mag",col:"orange",foc:"prob"}},
+ {g:"業務｜產品行銷",l:"業績檢討給團隊",out:"各產品線的目標達成率、與上季比較、落後原因，最後是下季每個人的行動。",v:{aud:"team",sty:"dash",col:"moran",foc:"compare"}}];
 const NS={};ND.forEach(d=>NS[d.k]={sel:d.def,own:""});let NM="short";
 const ndim=k=>ND.find(d=>d.k===k);
 function npick(k){const d=ndim(k),st=NS[k];if(st.sel==="own"){const t=st.own.trim();return t?{s:t,L:t,own:1}:null}return d.o.find(o=>o.id===st.sel)||null}
+const NB_TUNER=`<div class="tuner"><div class="tsub"><b>主色微調</b><span>拖曳滑桿調出自己的品牌色，會直接放進指令</span></div>
+<div class="tbody"><div class="tprev" id="tprev" aria-hidden="true"><i class="tbar"></i><i class="tl1"></i><i class="tl2"></i><i class="tbox"></i><span id="thex">#1F3A5F</span></div>
+<div class="tsl"><label for="th">色相</label><input type="range" id="th" min="0" max="360" step="1"><label for="ts">飽和</label><input type="range" id="ts" min="0" max="100" step="1"><label for="tl">明度</label><input type="range" id="tl" min="10" max="85" step="1"></div></div></div>`;
+function hsl2hex(h,s,l){s/=100;l/=100;const k=n=>(n+h/30)%12,a=s*Math.min(l,1-l),f=n=>l-a*Math.max(-1,Math.min(k(n)-3,Math.min(9-k(n),1)));return "#"+[f(0),f(8),f(4)].map(x=>Math.round(x*255).toString(16).padStart(2,"0")).join("").toUpperCase()}
+function hex2hsl(hex){const m=hex.replace("#","");const r=parseInt(m.slice(0,2),16)/255,g=parseInt(m.slice(2,4),16)/255,b=parseInt(m.slice(4,6),16)/255;const mx=Math.max(r,g,b),mn=Math.min(r,g,b);let h=0,s=0,l=(mx+mn)/2;if(mx!==mn){const d=mx-mn;s=l>.5?d/(2-mx-mn):d/(mx+mn);h=mx===r?(g-b)/d+(g<b?6:0):mx===g?(b-r)/d+2:(r-g)/d+4;h*=60}return[Math.round(h),Math.round(s*100),Math.round(l*100)]}
+function paintTuner(){const h=+$("th").value,s=+$("ts").value,l=+$("tl").value,hex=hsl2hex(h,s,l);
+  const pv=$("tprev");pv.style.setProperty("--tc",hex);pv.style.setProperty("--tt",hsl2hex(h,Math.min(s,60),94));$("thex").textContent=hex;
+  $("th").style.background=`linear-gradient(90deg,${[0,60,120,180,240,300,360].map(x=>hsl2hex(x,s,l)).join(",")})`;
+  $("ts").style.background=`linear-gradient(90deg,${hsl2hex(h,0,l)},${hsl2hex(h,100,l)})`;
+  $("tl").style.background=`linear-gradient(90deg,${hsl2hex(h,s,10)},${hsl2hex(h,s,50)},${hsl2hex(h,s,85)})`;return hex}
+function setTuner(hex){const [h,s,l]=hex2hsl(hex);$("th").value=h;$("ts").value=s;$("tl").value=Math.max(10,Math.min(85,l));paintTuner()}
 function renderNbDims(){
   $("nb-dims").innerHTML=ND.map((d,i)=>{const st=NS[d.k];
     const chips=d.o.map(o=>`<button class="chip" type="button" data-k="${d.k}" data-id="${o.id}" aria-pressed="${st.sel===o.id}">${o.c?`<span class="sw">${o.c.map(c=>`<em style="background:${c}"></em>`).join("")}</span>`:""}${o.l}</button>`).join("")+(d.req?"":`<button class="chip" type="button" data-k="${d.k}" data-id="" aria-pressed="${st.sel===""}">不指定</button>`);
-    return `<div class="step s0"><div class="step-head"><div class="badge">${i+1}</div><div><h2>${d.name}${d.req?'<span class="req">必選</span>':""}</h2><p>${d.hint}</p></div></div><div class="chips" role="group" aria-label="${d.name}">${chips}</div><div class="nb-own${st.sel==="own"?" on":""}"><label for="nbo-${d.k}">自己填</label><input id="nbo-${d.k}" data-k="${d.k}" maxlength="20" placeholder="${d.ph}"></div></div>`}).join("");
+    return `<div class="step s0"><div class="step-head"><div class="badge">${i+1}</div><div><h2>${d.name}${d.req?'<span class="req">必選</span>':""}</h2><p>${d.hint}</p></div></div><div class="chips" role="group" aria-label="${d.name}">${chips}</div><div class="nb-own${st.sel==="own"?" on":""}"><label for="nbo-${d.k}">自己填</label><input id="nbo-${d.k}" data-k="${d.k}" maxlength="20" placeholder="${d.ph}"></div>${d.k==="col"?NB_TUNER:""}</div>`}).join("");
 }
 function syncNb(k){$("nb-dims").querySelectorAll(`.chip[data-k="${k}"]`).forEach(b=>b.setAttribute("aria-pressed",String(NS[k].sel===b.dataset.id)));$("nbo-"+k).parentElement.classList.toggle("on",NS[k].sel==="own")}
 function nbParts(){const a=npick("aud"),s=npick("sty"),c=npick("col"),f=npick("foc"),im=npick("img");const seg=[];
@@ -1770,11 +1880,11 @@ function renderNb(){
 }
 let NQ=[];
 $("nb-qs").addEventListener("click",e=>{const b=e.target.closest("[data-q]");if(b)copy(NQ[+b.dataset.q],b)});
-renderNbDims();
+renderNbDims();setTuner("#1F3A5F");
 $("nb-presets").innerHTML=[...new Set(NP.map(p=>p.g))].map(g=>`<div class="pgrp"><b>${g}</b><div class="chips">${NP.map((p,i)=>p.g!==g?"":`<button class="chip" type="button" data-p="${i}" aria-pressed="false">${p.l}</button>`).join("")}</div></div>`).join("");
-$("nb-presets").addEventListener("click",e=>{const b=e.target.closest("[data-p]");if(!b)return;const v=NP[+b.dataset.p].v;ND.forEach(d=>{NS[d.k].sel=v[d.k]??d.def;syncNb(d.k)});renderNb()});
-$("nb-dims").addEventListener("click",e=>{const b=e.target.closest(".chip");if(!b)return;const k=b.dataset.k,d=ndim(k);NS[k].sel=(NS[k].sel===b.dataset.id&&!d.req)?"":b.dataset.id;syncNb(k);renderNb()});
-$("nb-dims").addEventListener("input",e=>{const k=e.target.dataset.k;if(!k)return;NS[k].own=e.target.value;if(e.target.value.trim())NS[k].sel="own";else if(NS[k].sel==="own")NS[k].sel=ndim(k).def;syncNb(k);renderNb()});
+$("nb-presets").addEventListener("click",e=>{const b=e.target.closest("[data-p]");if(!b)return;const pp=NP[+b.dataset.p],v=pp.v;$("nb-expect").hidden=false;$("nb-expect").innerHTML=`<b>這份簡報大概會長這樣</b>${pp.out}`;ND.forEach(d=>{NS[d.k].sel=v[d.k]??d.def;syncNb(d.k)});const co=ndim("col").o.find(o=>o.id===NS.col.sel);if(co)setTuner(co.c[0]);renderNb()});
+$("nb-dims").addEventListener("click",e=>{const b=e.target.closest(".chip");if(!b)return;const k=b.dataset.k,d=ndim(k);NS[k].sel=(NS[k].sel===b.dataset.id&&!d.req)?"":b.dataset.id;syncNb(k);if(k==="col"){const co=d.o.find(o=>o.id===NS.col.sel);if(co)setTuner(co.c[0])}renderNb()});
+$("nb-dims").addEventListener("input",e=>{if(e.target.type==="range"){const hex=paintTuner();NS.col.sel="own";NS.col.own=hex+"主色";$("nbo-col").value=NS.col.own;syncNb("col");renderNb();return}const k=e.target.dataset.k;if(!k)return;NS[k].own=e.target.value;if(e.target.value.trim())NS[k].sel="own";else if(NS[k].sel==="own")NS[k].sel=ndim(k).def;syncNb(k);renderNb()});
 $("nb-dims").addEventListener("focusin",e=>{const k=e.target.dataset&&e.target.dataset.k;if(k&&NS[k].own.trim()){NS[k].sel="own";syncNb(k);renderNb()}});
 $("nb-short").onclick=()=>{NM="short";renderNb()};$("nb-long").onclick=()=>{NM="long";renderNb()};
 $("nb-rand").onclick=()=>{const r=a=>a[Math.floor(Math.random()*a.length)];ND.forEach(d=>{NS[d.k].sel=d.req?r(d.o).id:(Math.random()<.3?r(d.o).id:"")});if(nlen(nbShort(nbParts()))>30)NS.img.sel="";ND.forEach(d=>syncNb(d.k));renderNb()};
